@@ -53,14 +53,14 @@ class ExamScheduledViewSet(ViewSet):
         # Llamado metodo para obtener info de examenes
 
         o_data = {
-            'asignatura': 120,
-            'nombre_asignatura': 'Calculo Integral',
-            'fecha': 'Sun Nov 17 2024 21:01:27 GMT-0500',
-            'salon': 12,
-            'salon_numero': 202,
-            'salon_edificio': 'Sabio Caldas',
-            'num_preguntas': 10,
-            'duracion': 2
+            'subject': 120,
+            'subject_name': 'Calculo Integral',
+            'date': 'Sun Nov 17 2024 21:01:27 GMT-0500',
+            'classroom': 12,
+            'classroom_number': 202,
+            'building': 'Sabio Caldas',
+            'number_questions': 10,
+            'duration': 2
             }
         return Response(o_data)
 
@@ -72,51 +72,51 @@ class ExamQuestionaireViewSet(ViewSet):
         # Llamado metodo para obtener info de preguntas
 
         o_data = {
-            'Exam':{
-                'asignatura': 120,
-                'preguntas':[
+            'exam':{
+                'subject': 120,
+                'questions':[
                     {
                     'id': 120,
-                    'tipo': QUESTION_TYPES['multiselect-multichoice'],
-                    'enunciado_pregunta': 'Enunciado dummy',
-                    'opciones': [
+                    'type': QUESTION_TYPES['multiselect-multichoice'],
+                    'question_statement': 'Enunciado dummy',
+                    'options': [
                         {
                             'id': 1,
-                            'texto': 'Opcion 1.'
+                            'text': 'Opcion 1.'
                         },
                         {
                             'id': 2,
-                            'texto': 'Opcion 2.'
+                            'text': 'Opcion 2.'
                         },
                         {
                             'id': 3,
-                            'texto': 'Opcion 3.'
+                            'text': 'Opcion 3.'
                         },
                         {
                             'id': 4,
-                            'texto': 'Opcion 4.'
+                            'text': 'Opcion 4.'
                         },
                         ]
                     },{
                     'id': 121,
-                    'tipo': QUESTION_TYPES['multiselect-multichoice'],
-                    'enunciado_pregunta': 'Enunciado dummy2',
-                    'opciones': [
+                    'type': QUESTION_TYPES['multiselect-singlechoice'],
+                    'question_statement': 'Enunciado dummy 2',
+                    'options': [
                         {
                             'id': 5,
-                            'texto': 'Opcion 1.'
+                            'text': 'Opcion 1.'
                         },
                         {
                             'id': 6,
-                            'texto': 'Opcion 2.'
+                            'text': 'Opcion 2.'
                         },
                         {
                             'id': 7,
-                            'texto': 'Opcion 3.'
+                            'text': 'Opcion 3.'
                         },
                         {
                             'id': 8,
-                            'texto': 'Opcion 4.'
+                            'text': 'Opcion 4.'
                         },
                         ]
                     }
