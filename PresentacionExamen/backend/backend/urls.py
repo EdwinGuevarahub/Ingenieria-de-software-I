@@ -21,6 +21,9 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'api', views.ApiViewSet, basename='api')
+router.register(r'api/auth', views.AuthViewSet, basename='auth')
+router.register(r'api/examScheduled', views.ExamScheduledViewSet, basename='exam_info')
+router.register(r'api/examQuestionaire', views.ExamQuestionaireViewSet, basename='exam_q&a')
 router.register(r'', views.DefaultViewSet, basename='default')
 
 urlpatterns = [
