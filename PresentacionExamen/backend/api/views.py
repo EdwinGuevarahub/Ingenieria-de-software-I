@@ -13,10 +13,6 @@ QUESTION_TYPES = {
     'true-false': 3,
 }
 
-class DefaultViewSet(ViewSet):
-    def list(self, request):
-        return Response({"message": "Base entry point. Hello, world!"})
-
 class ApiViewSet(ViewSet):
     def list(self, request):
         return Response({"message": "Base entry point. please specify in the path the resource you want to use."})
