@@ -14,4 +14,15 @@ UC_ValidarCredenciales --> UC_SeleccionarExamen
 UC_SeleccionarExamen --> UC_CargarPreguntas
 UC_CargarPreguntas --> UC_RegistrarRespuestas
 UC_RegistrarRespuestas --> UC_ConfirmarEnvio
+
+note right of UC_SeleccionarExamen
+El sistema Permite ingresar a un examen programado
+solo en la franja horaria especificada
+end note
+
+note right of UC_ConfirmarEnvio
+El sistema guarda automáticamente las respuestas y
+cierra el examen cuando el tiempo permitido se agota.
+end note
+
 @enduml

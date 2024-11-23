@@ -1,0 +1,27 @@
+@startuml CU3
+actor Docente
+
+rectangle "CU3: Crear Examen" {
+    usecase UC_ValidarCredenciales as "Validar usuario"
+    usecase UC_CrearExamen as "Crear Examen"
+    usecase UC_SeleccionarAsignatura as "Seleccionar asignatura"
+    usecase UC_AgregarPreguntas as "Agregar preguntas"
+    usecase UC_GuardarExamen as "Guardar examen"
+}
+
+Docente -> UC_ValidarCredenciales
+UC_ValidarCredenciales --> UC_CrearExamen
+UC_CrearExamen --> UC_SeleccionarAsignatura
+UC_SeleccionarAsignatura --> UC_AgregarPreguntas
+UC_AgregarPreguntas --> UC_GuardarExamen
+
+note right of UC_AgregarPreguntas
+El docente crea o edita un examen:
+- Seleccionando preguntas del banco o añadiendo nuevas.
+end note
+
+note right of UC_GuardarExamen
+El examen solo será guardado si:
+- Contiene preguntas seleccionadas y/o creadas
+end note
+@enduml

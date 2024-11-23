@@ -1,0 +1,24 @@
+@startuml CU5
+actor Docente
+
+rectangle "CU5: Programar Examen" {
+    usecase UC_ValidarCredenciales as "Validar usuario"
+    usecase UC_SeleccionarAsignatura as "Seleccionar asignatura"
+    usecase UC_DefinirFechaHora as "Definir fecha y hora"
+    usecase UC_DefinirSalon as "Definir Salón"
+    usecase UC_ConfirmarProgramacion as "Confirmar programación"
+}
+
+Docente -> UC_ValidarCredenciales
+UC_ValidarCredenciales --> UC_SeleccionarAsignatura
+UC_SeleccionarAsignatura --> UC_DefinirFechaHora
+UC_DefinirFechaHora --> UC_DefinirSalon
+UC_DefinirSalon --> UC_ConfirmarProgramacion
+
+note right of UC_ConfirmarProgramacion
+La programación solo será válida si:
+- La fecha y hora están disponibles.
+- El salón está disponibles.
+end note
+
+@enduml

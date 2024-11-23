@@ -1,0 +1,22 @@
+@startuml CU6
+actor Estudiante
+actor Docente
+
+rectangle "CU6: Consultar Nota" {
+    usecase UC_ValidarCredenciales as "Validar usuario"
+    usecase UC_ListarExamenes as "Listar exámenes"
+    usecase UC_VerDetallesNota as "Ver detalles de la nota"
+}
+
+Docente -> UC_ValidarCredenciales
+Estudiante -> UC_ValidarCredenciales
+UC_ValidarCredenciales --> UC_ListarExamenes
+UC_ListarExamenes --> UC_VerDetallesNota
+
+note right of UC_VerDetallesNota
+El sistema permite:
+- A los estudiantes consultar sus notas.
+- A los docentes consultar las notas de los estudiantes.
+- La nota se mostrará después de que termine la franja horaria del examen.
+end note
+@enduml

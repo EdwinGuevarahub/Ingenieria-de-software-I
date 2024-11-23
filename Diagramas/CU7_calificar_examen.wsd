@@ -1,0 +1,21 @@
+@startuml CU7
+actor Sistema
+
+rectangle "CU7: Calificar Examen" {
+    usecase UC_CalcularNotaFinal as "Calcular la nota final del examen"
+    usecase UC_ValidarExamenTerminado as "Validar que el examen haya terminado"
+    usecase UC_MostrarNotaCalculada as "Mostrar la nota calculada"
+}
+
+Sistema -> UC_ValidarExamenTerminado
+UC_ValidarExamenTerminado --> UC_CalcularNotaFinal : Validación exitosa
+UC_CalcularNotaFinal --> UC_MostrarNotaCalculada : Nota calculada
+
+note right of UC_CalcularNotaFinal
+El sistema:
+- Calcula la nota final usando la fórmula:
+  5 * (respuestas correctas / total preguntas).
+
+La nota es calculada, no se almacena en el sistema.
+end note
+@enduml

@@ -1,0 +1,32 @@
+@startuml CU4
+actor Docente
+
+rectangle "CU4: Crear Pregunta" {
+    usecase UC_ValidarUsuario as "Validar usuario"
+    usecase UC_SeleccionarAsignatura as "Seleccionar asignatura"
+    usecase UC_IngresarDescripcion as "Ingresar descripción de la pregunta"
+    usecase UC_IngresarRespuestas as "Ingresar respuestas posibles"
+    usecase UC_EstablecerTiempo as "Establecer tiempo de respuesta"
+    usecase UC_ValidarDuplicado as "Validar duplicidad de la pregunta"
+    usecase UC_GuardarPregunta as "Guardar pregunta en la base de datos"
+}
+
+Docente -> UC_ValidarUsuario
+UC_ValidarUsuario --> UC_SeleccionarAsignatura
+UC_SeleccionarAsignatura --> UC_IngresarDescripcion
+UC_IngresarDescripcion --> UC_IngresarRespuestas
+UC_IngresarRespuestas --> UC_EstablecerTiempo
+UC_EstablecerTiempo --> UC_ValidarDuplicado
+UC_ValidarDuplicado --> UC_GuardarPregunta
+
+note right of UC_ValidarDuplicado
+El sistema valida que la pregunta no exista previamente en la base de datos.
+end note
+
+note right of UC_GuardarPregunta
+El sistema almacena:
+- Descripción de la pregunta.
+- Respuestas posibles.
+- Tiempo de respuesta configurado.
+end note
+@enduml

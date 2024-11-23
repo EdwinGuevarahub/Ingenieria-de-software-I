@@ -1,0 +1,29 @@
+@startuml CU1
+actor Estudiante
+actor Docente
+
+rectangle "CU1: Consultar Examen" {
+    usecase UC_ValidarCredenciales as "Validar usuario"
+    usecase UC_ListarExamenesEstudiante as "Mostrar exámenes para presentar"
+    usecase UC_ListarExamenesDocente as "Mostrar exámenes para cuidar"
+    usecase UC_SeleccionarExamen as "Seleccionar un examen"
+    usecase UC_VerDetallesExamen as "Ver detalles del examen"
+}
+
+Estudiante -> UC_ValidarCredenciales
+Docente -> UC_ValidarCredenciales
+
+UC_ValidarCredenciales --> UC_ListarExamenesEstudiante : Estudiante
+UC_ValidarCredenciales --> UC_ListarExamenesDocente : Docente
+
+UC_ListarExamenesEstudiante --> UC_SeleccionarExamen
+UC_ListarExamenesDocente --> UC_SeleccionarExamen
+
+UC_SeleccionarExamen --> UC_VerDetallesExamen
+
+note right of UC_ListarExamenesEstudiante
+Solo el Estudiante puede presentar el examen
+si está dentro del rango de tiempo permitido
+end note
+
+@enduml
