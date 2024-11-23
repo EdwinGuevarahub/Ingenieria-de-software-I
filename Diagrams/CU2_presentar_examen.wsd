@@ -1,0 +1,17 @@
+@startuml CU2
+actor Estudiante
+
+rectangle "CU2: Presentar Examen" {
+    usecase UC_ValidarCredenciales as "Validar usuario"
+    usecase UC_SeleccionarExamen as "Seleccionar examen"
+    usecase UC_CargarPreguntas as "Cargar preguntas del examen"
+    usecase UC_RegistrarRespuestas as "Registrar respuestas"
+    usecase UC_ConfirmarEnvio as "Confirmar envío"
+}
+
+Estudiante -> UC_ValidarCredenciales
+UC_ValidarCredenciales --> UC_SeleccionarExamen
+UC_SeleccionarExamen --> UC_CargarPreguntas
+UC_CargarPreguntas --> UC_RegistrarRespuestas
+UC_RegistrarRespuestas --> UC_ConfirmarEnvio
+@enduml
