@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   frontend:
     build:
@@ -42,6 +40,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./Database:/docker-entrypoint-initdb.d  # Monta la carpeta Database
     networks:
       - app-network
 
