@@ -1,6 +1,44 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
+from .models import (
+    Asignaturas,
+    Corresponde,
+    Crea,
+    Cursa,
+    Estudiantes,
+    Evalua,
+    Imparte,
+    Ingresa,
+    Preguntas,
+    Profesores,
+    Programa,
+    Responde,
+    Respuestas,
+    Salones,
+    Selecciona,
+    Tipospreguntas,
+)
+
+from .serializers import (
+    AsignaturaSerializer,
+    CorrespondeSerializer,
+    CreaSerializer,
+    CursaSerializer,
+    EstudianteSerializer,
+    EvaluaSerializer,
+    ImparteSerializer,
+    IngresaSerializer,
+    PreguntasSerializer,
+    ProfesoresSerializer,
+    ProgramaSerializer,
+    RespondeSerializer,
+    RespuestasSerializer,
+    SalonesSerializer,
+    SeleccionaSerializer,
+    TipospreguntasSerializer,
+    UserSerializer
+)
 
 USER_TYPES = {
     'estudiante': 1,
@@ -36,13 +74,15 @@ class AuthViewSet(ViewSet):
         return Response(o_data)
 
 class ExamQuestionaireViewSet(ViewSet):
-    # GET - pull questionaire questions based on id provided
+    # GET - pull questionaire questions based on exam_id provided
     def retrieve(self, request, exam_id=None, *args, **kwargs):
         # Usa question_id para manejar la lógica
         s_exam_id = exam_id
 
         # Instancia clase
         # Llamado metodo para obtener info de preguntas
+        asignaturas = Estudiantes.objects.all()  # Obtén los registros del modelo
+        serializer = EstudianteSerializer(asignaturas, many=True)  # Serializa los datos
 
         o_data = {
             "exam": {
@@ -115,9 +155,9 @@ class ExamQuestionaireViewSet(ViewSet):
                     ]
                 }
             }
-        return Response(o_data)
+        return Response(serializer.data)
 
-    # GET - pull all questionaire
+    # GET - pull all questionaire ???
     def list(self, request):
         o_data = {
             }
