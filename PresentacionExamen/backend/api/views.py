@@ -37,8 +37,9 @@ class AuthViewSet(ViewSet):
 
 class ExamQuestionaireViewSet(ViewSet):
     # GET - pull questionaire questions based on id provided
-    def retrieve(self, request):
-        s_question_id = request.query_params.get('question_id', None)
+    def retrieve(self, request, exam_id=None, *args, **kwargs):
+        # Usa question_id para manejar la lógica
+        s_exam_id = exam_id
 
         # Instancia clase
         # Llamado metodo para obtener info de preguntas
@@ -47,7 +48,7 @@ class ExamQuestionaireViewSet(ViewSet):
             "exam": {
                 "subject": 120,
                 "duration": 10,
-                "isProgrammed": true,
+                "isProgrammed": True,
                 "typeExam": 1,
                 "questions": [
                         {
@@ -178,7 +179,7 @@ class ExamScheduledViewSet(ViewSet):
                 "salonBuilding": "Sabio Caldas",
                 "numQuestions": 10,
                 "duration": 30,
-                "isProgrammed": true
+                "isProgrammed": True
                 },
                 {
                 "subject": 115,
@@ -189,7 +190,7 @@ class ExamScheduledViewSet(ViewSet):
                 "salonBuilding": "Sabio Caldas",
                 "numQuestions": 25,
                 "duration": 60,
-                "isProgrammed": true
+                "isProgrammed": True
                 },
                 {
                 "subject": 210,
@@ -248,7 +249,7 @@ class ExamScheduledViewSet(ViewSet):
 
 class ExamViewSet(ViewSet):
     # GET - get exam settings based on id
-    def retrieve(self, request):
+    def list(self, request):
         o_data = {
                 "status": 200,
                 "message": "El examen ya se encuentra creado",
@@ -276,7 +277,7 @@ class ExamViewSet(ViewSet):
 
 class NotesViewSet(ViewSet):
     # GET - retrieve notes based on role and subject
-    def retrieve(self, request):
+    def list(self, request):
 
         #student notes
         o_data = {
@@ -358,19 +359,19 @@ class NotesViewSet(ViewSet):
                     "answerStudent": [
                         {
                         "idQuestion": 1,
-                        "isCorrect": true
+                        "isCorrect": True
                         },
                         {
                         "idQuestion": 2,
-                        "isCorrect": true
+                        "isCorrect": True
                         },
                         {
                         "idQuestion": 3,
-                        "isCorrect": true
+                        "isCorrect": True
                         },
                         {
                         "idQuestion": 4,
-                        "isCorrect": true
+                        "isCorrect": True
                         },
                         {
                         "idQuestion": 5,
@@ -385,7 +386,7 @@ class NotesViewSet(ViewSet):
                     "answerStudent": [
                         {
                         "idQuestion": 1,
-                        "isCorrect": true
+                        "isCorrect": True
                         },
                         {
                         "idQuestion": 2,
@@ -393,11 +394,11 @@ class NotesViewSet(ViewSet):
                         },
                         {
                         "idQuestion": 3,
-                        "isCorrect": true
+                        "isCorrect": True
                         },
                         {
                         "idQuestion": 4,
-                        "isCorrect": true
+                        "isCorrect": True
                         },
                         {
                         "idQuestion": 5,
@@ -428,7 +429,7 @@ class NotesViewSet(ViewSet):
                         },
                         {
                         "idQuestion": 5,
-                        "isCorrect": true
+                        "isCorrect": True
                         }
                     ]
                 }
@@ -437,7 +438,7 @@ class NotesViewSet(ViewSet):
         return Response(o_data)
 
 class QuestionViewSet(ViewSet):
-    # GET - retrieve question per question_id or question_list per exam_id
+    # GET - retrieve question per question_id
     def retrieve(self, request):
         o_data = {
 
