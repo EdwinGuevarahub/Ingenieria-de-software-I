@@ -20,11 +20,15 @@ from api import views
 from rest_framework import routers
 
 router = routers.DefaultRouter()
+router.register(r'', views.DefaultViewSet, basename='default')
 router.register(r'api', views.ApiViewSet, basename='api')
 router.register(r'api/auth', views.AuthViewSet, basename='auth')
-router.register(r'api/examScheduled', views.ExamScheduledViewSet, basename='exam_info')
-router.register(r'api/examQuestionaire', views.ExamQuestionaireViewSet, basename='exam_q&a')
-router.register(r'', views.DefaultViewSet, basename='default')
+router.register(r'api/exam-questionaire', views.ExamQuestionaireViewSet, basename='exam_q&a')
+router.register(r'api/exam-scheduled', views.ExamScheduledViewSet, basename='exam_scheduled_info')
+router.register(r'api/exam', views.ExamViewSet, basename='exam_info')
+router.register(r'api/notes', views.NotesViewSet, basename='notes_info')
+router.register(r'api/question', views.QuestionViewSet, basename='question_info')
+router.register(r'api/salon', views.SalonViewSet, basename='salon_info')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
