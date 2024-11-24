@@ -1,0 +1,58 @@
+@startuml CU5
+title Diagrama de Clases para CU-5: Programar/Reagendar Examen
+
+class Docente {
+    - id: int
+    - nombre: string
+    - correo: string
+    + imparteAsignatura(asignatura: Asignatura): bool
+}
+
+class UIPresentacion {
+    + mostrarInterfaz(): void
+    + mostrarConfirmacion(mensaje: string): void
+}
+
+class ValidarDocente {
+    + validar(docente: Docente): bool
+}
+
+class Asignatura {
+    - id: int
+    - nombre: string
+    + esImpartidaPor(docente: Docente): bool
+}
+
+class ProgramarExamen {
+    + programar(examen: Examen, detalles: Programacion): void
+}
+
+class ReagendarExamen {
+    + reagendar(examen: Examen, nuevosDetalles: Programacion): void
+}
+
+class Examen {
+    - id: int
+    - titulo: string
+    - estado: string
+    + finalizarEdicion(): void
+}
+
+class Programacion {
+    - dia: string
+    - hora: string
+    - salon: string
+    + asignarDetalles(dia: string, hora: string, salon: string): void
+    + modificarDetalles(nuevosDetalles: Programacion): void
+}
+
+' Relaciones
+Docente --> UIPresentacion : Interactua con
+UIPresentacion --> ValidarDocente : solicita validación
+ValidarDocente --> Asignatura : consulta asignatura
+Asignatura --> ProgramarExamen : valida asignatura
+Asignatura --> ReagendarExamen : valida asignatura
+ProgramarExamen --> Examen : programa
+ReagendarExamen --> Examen : modifica programación
+Examen --> Programacion : tiene
+@enduml

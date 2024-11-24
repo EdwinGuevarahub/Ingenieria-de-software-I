@@ -1,0 +1,29 @@
+@startuml CU5
+title Diagrama de colaboración para CU-5: Programar/Reagendar Examen
+
+actor Docente
+
+participant UIPresentacion as "UI Presentación Examen"
+control ValidarDocente as "Validar Docente"
+participant Asignatura as "Asignatura"
+control ProgramarExamen as "Programar Examen"
+control ReagendarExamen as "Reagendar Examen"
+participant Examen as "Examen"
+
+' Flujo principal de programación
+Docente -> UIPresentacion : 1. Mostrar interfaz de presentación de examen
+UIPresentacion -> ValidarDocente : 2. Validar Docente
+ValidarDocente -> Asignatura : 3. Validar si el docente imparte la asignatura
+Asignatura -> ProgramarExamen : 4. Docente imparte asignatura
+ProgramarExamen -> Examen : 5. Examen finalizado en edición
+ProgramarExamen -> Examen : 6. Asignar detalles de programación (día, hora, salón)
+UIPresentacion <-- ProgramarExamen : 7. Confirmación de programación exitosa
+
+' Flujo alternativo de reagendamiento
+UIPresentacion -> ReagendarExamen : 8. Solicitar reagendar examen
+ReagendarExamen -> ValidarDocente : 9. Validar Docente
+ValidarDocente -> Asignatura : 10. Verificar asignatura del docente
+ReagendarExamen -> Examen : 11. Reasignar detalles de programación (día, hora, salón)
+UIPresentacion <-- ReagendarExamen : 12. Confirmación de reagendamiento exitoso
+
+@enduml
