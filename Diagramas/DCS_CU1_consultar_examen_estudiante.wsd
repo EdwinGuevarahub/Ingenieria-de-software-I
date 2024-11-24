@@ -1,0 +1,40 @@
+@startuml CU1
+title Diagrama de Clases para CU1: Consultar Examen - Estudiante
+
+class Estudiante {
+    - id_estudiante: int
+    - nombre: string
+    - correo: string
+    + inscritoEn(asignatura: Asignatura): bool
+}
+
+class Asignatura {
+    - cod_asignatura: int
+    - nombre: string
+    + validarInscripcion(estudiante: Estudiante): bool
+}
+
+class Examen {
+    - id_examen: int
+    - titulo: string
+    - descripcion: string
+    - fecha: datetime
+    - duracion: int
+    - salon: string
+    + obtenerHorario(): string
+    + obtenerInformacion(): dict
+}
+
+class UI_Presentacion_Examen {
+    + mostrarExamen(examen: Examen): void
+    + solicitarValidacion(estudiante: Estudiante): void
+}
+
+class ValidarEstudiante {
+    + validar(estudiante: Estudiante): bool
+}
+
+Estudiante --> UI_Presentacion_Examen : "interactúa con"
+UI_Presentacion_Examen --> ValidarEstudiante : "solicita validación"
+UI_Presentacion_Examen --> Asignatura : "consulta inscripción"
+Asignatura --> Examen : "obtiene información"

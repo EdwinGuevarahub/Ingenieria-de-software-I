@@ -1,0 +1,18 @@
+@startuml test
+title Diagrama de colaboracion para CU1: Consultar Examen - Docente
+
+actor Docente
+boundary    UIPresentacion   as UIPresentacion
+control     ValidarDocente    as ValidarDocente
+participant Asignatura as  Asignatura
+control     ConsultaHorario    as ConsultaHorario
+participant Examen as Examen
+
+Docente -> UIPresentacion : "1. Consultar examen"
+UIPresentacion -> ValidarDocente : "2. Validar docente"
+ValidarDocente -> Asignatura : "3. Validar que imparte la asignatura"
+Asignatura -> ConsultaHorario : "4. Consultar horario"
+ConsultaHorario -> Examen : "5. Consultar horario de Examen"
+Examen -> ConsultaHorario : "6. Horario Examen es devuelto"
+ConsultaHorario -> UIPresentacion : "7. Mostrar horario de examen"
+@enduml
