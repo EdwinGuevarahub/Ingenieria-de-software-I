@@ -1,0 +1,24 @@
+@startuml CU3
+title Diagrama de colaboración para CU-3: Crear Examen
+
+actor Docente
+
+participant UIPresentacion as "UI Presentación Examen"
+control ValidarDocente as "Validar Docente"
+participant Asignatura as "Asignatura"
+control CrearExamen as "Crear Examen"
+participant Examen as "Examen"
+participant Pregunta as "Pregunta"
+control SeleccionarPregunta as "Seleccionar Pregunta"
+control EditarExamen as "Editar Examen"
+
+Docente -> UIPresentacion : 1. Mostrar interfaz de presentación de examen
+UIPresentacion -> ValidarDocente : 2. Validar Docente
+ValidarDocente -> Asignatura : 3. Validar si el docente imparte la asignatura
+Asignatura -> CrearExamen : 4. Docente imparte asignatura
+CrearExamen -> Examen : 5. Creación del examen
+Examen -> Pregunta : 6. Adicionar/eliminar pregunta al examen
+Pregunta -> SeleccionarPregunta : 7. Selección de pregunta
+SeleccionarPregunta -> EditarExamen : 8. Editar examen
+EditarExamen -> Examen : 9. Guardar examen
+@enduml

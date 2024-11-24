@@ -1,0 +1,63 @@
+@startuml CU3
+title Diagrama de clases para CU-3: Crear Examen
+
+class Docente {
+    +id_docente: int
+    +nombre: string
+    +correo: string
+    +imparteAsignatura(asignatura: Asignatura): bool
+}
+
+class UIPresentacion {
+    +mostrarInterfazCreacionExamen(): void
+}
+
+class ValidarDocente {
+    + validar(docente: Docente): bool
+}
+
+class Asignatura {
+    +id_asignatura: int
+    +nombre: string
+    +validarDocente(docente: Docente): bool
+}
+
+class CrearExamen {
+    +crearExamen(asignatura: Asignatura): Examen
+}
+
+class Examen {
+    +id_examen: int
+    +titulo: string
+    +descripcion: string
+    +duracion: int
+    +guardarExamen(): void
+    +agregarPregunta(pregunta: Pregunta): void
+    +eliminarPregunta(pregunta: Pregunta): void
+}
+
+class Pregunta {
+    +id_pregunta: int
+    +contenido: string
+    +opciones: string[]
+    +respuestaCorrecta: string
+}
+
+class SeleccionarPregunta {
+    +seleccionarPregunta(examen: Examen): Pregunta
+}
+
+class EditarExamen {
+    +editarExamen(examen: Examen): void
+}
+
+Docente --> UIPresentacion : usa
+UIPresentacion --> ValidarDocente : llama
+ValidarDocente --> Asignatura : valida
+Asignatura --> CrearExamen : interactúa
+CrearExamen --> Examen : crea
+Examen --> Pregunta : maneja
+Pregunta --> SeleccionarPregunta : selecciona
+SeleccionarPregunta --> EditarExamen : modifica
+EditarExamen --> Examen : guarda
+@enduml
