@@ -1,0 +1,46 @@
+@startuml CU7
+title Diagrama de Clases para CU-7: Calificar Examen
+
+class Sistema {
+    + calcularNota(examen: Examen, estudiante: Estudiante): float
+}
+
+class Examen {
+    - id: int
+    - titulo: string
+    - descripcion: string
+    - fechaInicio: datetime
+    - fechaFin: datetime
+    + verificarFranjaHoraria(): bool
+    + obtenerPreguntas(): List<Pregunta>
+}
+
+class Pregunta {
+    - id: int
+    - enunciado: string
+    - respuestaCorrecta: string
+    + validarSeleccion(selecciona: Selecciona): bool
+}
+
+class Selecciona {
+    - id: int
+    - estudiante: Estudiante
+    - pregunta: Pregunta
+    - seleccion: string
+    + esCorrecta(): bool
+}
+
+class Estudiante {
+    - id: int
+    - nombre: string
+    - correo: string
+    + obtenerRespuestas(examen: Examen): List<Selecciona>
+}
+
+Sistema --> Examen : "Solicita preguntas y verifica franja"
+Examen --> Pregunta : "Devuelve detalles"
+Sistema --> Estudiante : "Solicita respuestas seleccionadas"
+Estudiante --> Selecciona : "Devuelve seleccionadas"
+Selecciona --> Pregunta : "Valida selección"
+Sistema --> Sistema : "Calcula nota"
+@enduml

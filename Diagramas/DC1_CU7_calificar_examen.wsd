@@ -1,0 +1,19 @@
+@startuml CU7
+title Diagrama de colaboración para CU-7: Calificar Examen
+
+actor Sistema
+
+participant Examen as "Examen"
+participant Respuestas as "Respuestas"
+participant Nota as "Nota"
+control CalcularNota as "Calcular Nota"
+control ValidarFranjaHoraria as "Validar Franja Horaria"
+
+Sistema -> Examen : 1. Solicitar información del examen
+Examen -> ValidarFranjaHoraria : 2. Verificar si terminó la franja horaria
+ValidarFranjaHoraria -> Respuestas : 3. Obtener respuestas correctas
+Respuestas -> CalcularNota : 4. Generar cálculo de la nota
+CalcularNota -> Sistema : 5. Devolver nota calculada
+Sistema -> Nota : 6. Mostrar nota al usuario
+
+@enduml
