@@ -1,0 +1,25 @@
+@startuml CU4
+title Diagrama de colaboración para CU-4: Crear Pregunta
+
+actor Docente
+
+participant UIPresentacion as "UI Presentación Pregunta"
+control ValidarDocente as "Validar Docente"
+participant Asignatura as "Asignatura"
+control CrearPregunta as "Crear Pregunta"
+participant Pregunta as "Pregunta"
+control ValidarPregunta as "Validar Pregunta"
+participant Tiempo as "Tiempo"
+participant Respuesta as "Respuesta"
+
+Docente -> UIPresentacion : 1. Mostrar interfaz de creación de pregunta
+UIPresentacion -> ValidarDocente : 2. Validar Docente
+ValidarDocente -> Asignatura : 3. Validar asignatura impartida por docente
+Asignatura -> CrearPregunta : 4. Validar asignación a asignatura
+CrearPregunta -> Pregunta : 5. Crear pregunta
+Pregunta -> Respuesta : 6. Ingresar respuestas
+Respuesta -> ValidarPregunta : 7. Validar existencia de la pregunta
+ValidarPregunta -> Tiempo : 8. Ingresar tiempo de respuesta
+Tiempo -> CrearPregunta : 9. Asociar tiempo a la pregunta
+CrearPregunta -> Asignatura : 10. Asignar pregunta a asignatura
+@enduml

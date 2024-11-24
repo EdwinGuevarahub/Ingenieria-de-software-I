@@ -1,0 +1,55 @@
+@startuml CU4
+title Diagrama de Clases Ajustado para CU-4: Crear Pregunta
+
+class Docente {
+    +id_docente: int
+    +nombre: string
+    +correo: string
+    +imparteAsignatura(asignatura: Asignatura): bool
+}
+
+class UIPresentacion {
+    +mostrarInterfazCreacionPregunta(): void
+}
+
+class ValidarDocente {
+    + validar(docente: Docente): bool
+}
+
+class Asignatura {
+    +id: int
+    +nombre: string
+    +validarAsignatura(docente: Docente): bool
+    +asignarPregunta(pregunta: Pregunta): void
+}
+
+class CrearPregunta {
+    +crearPregunta(asignatura: Asignatura, enunciado: string): Pregunta
+}
+
+class Pregunta {
+    +id: int
+    +enunciado: string
+    +duracion: int
+    +validarExistencia(): bool
+    +asociarDuracion(duracion: int): void
+}
+
+class Respuesta {
+    +id: int
+    +opciones: list<string>
+    +guardarOpciones(pregunta: Pregunta): void
+}
+
+class ValidarPregunta {
+    +validarExistencia(pregunta: Pregunta): bool
+}
+
+Docente --> UIPresentacion : Interactúa con
+UIPresentacion --> ValidarDocente : Valida
+ValidarDocente --> CrearPregunta : Solicita creación
+CrearPregunta --> Pregunta : Crea
+Pregunta --> Respuesta : Relaciona
+Respuesta --> ValidarPregunta : Valida
+CrearPregunta --> Asignatura : Asigna pregunta
+@enduml
