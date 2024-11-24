@@ -1,5 +1,5 @@
 @startuml CU2
-title Diagrama de colaboración para CU-3: Presentar Examen - Estudiante
+title Diagrama de colaboración para CU-2: Presentar Examen - Estudiante
 
 actor Estudiante
 

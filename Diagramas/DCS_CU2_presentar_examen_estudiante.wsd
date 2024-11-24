@@ -1,5 +1,5 @@
 @startuml CU2
-title Diagrama de Clases para CU-3: Presentar Examen - Estudiante
+title Diagrama de Clases para CU-2: Presentar Examen - Estudiante
 
 class Estudiante {
     - id_estudiante: int
