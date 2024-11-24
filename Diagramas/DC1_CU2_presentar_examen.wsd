@@ -1,0 +1,22 @@
+@startuml CU2
+title Diagrama de colaboración para CU-3: Presentar Examen - Estudiante
+
+actor Estudiante
+
+participant UIPresentacion as "UI Presentación Examen"
+participant ValidarEstudiante as "Validar Estudiante"
+participant Asignatura as "Asignatura"
+participant Examen as "Examen"
+participant Programa as "Programa"
+participant FinalizacionExamen as "Finalización Examen"
+
+Estudiante -> UIPresentacion : 1. "Solicitar presentación del examen"
+UIPresentacion -> ValidarEstudiante : 2. "Validar estudiante"
+ValidarEstudiante -> Asignatura : 3. "Verificar inscripción en asignatura"
+Asignatura -> Programa : 4. "Obtener programación del examen"
+Programa -> Examen : 5. "Examen asociado a la programación"
+Programa -> UIPresentacion : 6. "Mostrar detalles del examen y horario"
+
+Examen -> FinalizacionExamen : 7. "Registrar respuestas del estudiante"
+FinalizacionExamen -> Programa : 8. "Cerrar examen al terminar la franja horaria"
+@enduml

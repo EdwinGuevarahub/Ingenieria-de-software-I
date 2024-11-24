@@ -5,7 +5,6 @@ class Estudiante {
     - id_estudiante: int
     - nombre: string
     - correo: string
-    + inscritoEn(asignatura: Asignatura): bool
 }
 
 class Asignatura {

@@ -1,0 +1,54 @@
+@startuml CU2
+title Diagrama de Clases para CU-3: Presentar Examen - Estudiante
+
+class Estudiante {
+    - id_estudiante: int
+    - nombre: string
+    - correo: string
+    + autenticar(): bool
+}
+
+class UIPresentacion {
+    + mostrarExamen(examen: Examen): void
+    + solicitarValidacion(estudiante: Estudiante): bool
+}
+
+class ValidarEstudiante {
+    + validar(estudiante: Estudiante): bool
+}
+
+class Asignatura {
+    - cod_asignatura: int
+    - nombre: string
+    + validarInscripcion(estudiante: Estudiante): bool
+}
+
+class Programa {
+    - id_programa: int
+    - horario: string
+    - lugar: string
+    + obtenerProgramacion(asignatura: Asignatura): Examen
+}
+
+class Examen {
+    - id_examen: int
+    - titulo: string
+    - descripcion: string
+    - duracion: int
+    + obtenerPreguntas(): void
+}
+
+class FinalizacionExamen {
+    + registrarRespuestas(estudiante: Estudiante, examen: Examen): void
+    + cerrarExamen(programa: Programa): void
+}
+
+Estudiante --> UIPresentacion : solicita
+UIPresentacion --> ValidarEstudiante : valida
+ValidarEstudiante --> Asignatura : consulta inscripción
+Asignatura --> Programa : solicita programación
+Programa --> Examen : devuelve examen
+Programa --> UIPresentacion : muestra detalles
+Examen --> FinalizacionExamen : registra respuestas
+FinalizacionExamen --> Programa : cierra examen
+@enduml
