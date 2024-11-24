@@ -49,6 +49,11 @@ CREATE TABLE Respuestas (
     desc_respuesta VARCHAR(150) NOT NULL  -- Descripción de la respuesta
 );
 
+CREATE TABLE TipoExamen (
+    id_tipo_examen INT PRIMARY KEY,          -- Identificador único del tipo de examen
+    nombre_tipo_examen VARCHAR(50) NOT NULL -- Nombre del tipo de examen
+);
+
 -- Relaciones
 -- Relación Cursa (Relación Estudiantes - Asignaturas)
 CREATE TABLE Cursa (
@@ -93,18 +98,20 @@ CREATE TABLE Evalua (
 
 -- Relación Crea (Imparte - Evalua)
 CREATE TABLE Crea (
-    cod_profesor INT NOT NULL, -- Clave primaria de Imparte
-    cod_asignatura INT NOT NULL, -- Clave primaria de Imparte
-    grupo SMALLINT NOT NULL, -- Clave primaria de Imparte
-    cod_estudiante BIGINT NOT NULL, -- Clave primaria de Evalua
-    id_pregunta INT NOT NULL, -- Clave primaria de Evalua
-    id_respuesta INT NOT NULL, -- Clave primaria de Evalua
-    id_examen INT NOT NULL, -- Identificador único del examen creado
-    examen_finalizado BOOLEAN NOT NULL, -- Indica si el examen está finalizado
-    id_salon INT, -- Relación con el salón donde se desarrolla el examen (de Desarrolla)
+    cod_profesor INT NOT NULL,                 -- Clave primaria de Imparte
+    cod_asignatura INT NOT NULL,               -- Clave primaria de Imparte
+    grupo SMALLINT NOT NULL,                   -- Clave primaria de Imparte
+    cod_estudiante BIGINT NOT NULL,            -- Clave primaria de Evalua
+    id_pregunta INT NOT NULL,                  -- Clave primaria de Evalua
+    id_respuesta INT NOT NULL,                 -- Clave primaria de Evalua
+    id_examen INT NOT NULL,                    -- Identificador único del examen creado
+    tipo_examen INT NOT NULL,                  -- Tipo de examen, referencia a TipoExamen
+    examen_finalizado BOOLEAN NOT NULL,        -- Indica si el examen está finalizado
+    id_salon INT,                              -- Relación con el salón donde se desarrolla el examen (de Desarrolla)
     PRIMARY KEY (cod_profesor, cod_asignatura, grupo, cod_estudiante, id_pregunta, id_respuesta, id_examen),
     FOREIGN KEY (cod_profesor, cod_asignatura, grupo) REFERENCES Imparte(cod_profesor, cod_asignatura, grupo),
-    FOREIGN KEY (cod_estudiante, cod_asignatura, grupo, cod_profesor, id_pregunta, id_respuesta) REFERENCES Evalua(cod_estudiante, cod_asignatura, grupo, cod_profesor, id_pregunta, id_respuesta)
+    FOREIGN KEY (cod_estudiante, cod_asignatura, grupo, cod_profesor, id_pregunta, id_respuesta) REFERENCES Evalua(cod_estudiante, cod_asignatura, grupo, cod_profesor, id_pregunta, id_respuesta),
+    FOREIGN KEY (tipo_examen) REFERENCES TipoExamen(id_tipo_examen)
 );
 
 -- Relación Ingresa (Imparte - Corresponde)

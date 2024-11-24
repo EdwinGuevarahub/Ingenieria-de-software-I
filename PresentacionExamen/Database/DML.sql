@@ -67,6 +67,13 @@ VALUES
 (2, 'Opción Múltiple - Única Respuesta'),
 (3, 'Verdadero/Falso');
 
+-- Tipo Examen
+INSERT INTO TipoExamen (id_tipo_examen, nombre_tipo_examen)
+VALUES
+(1, '1er corte'),
+(2, '2do corte'),
+(3, '3er corte'),
+(4, 'Final');
 
 -- Preguntas
 INSERT INTO Preguntas (desc_pregunta, tipo_pregunta)
@@ -114,10 +121,10 @@ VALUES
 (20162007002, 5014, 1, 30590, 4, 7), -- Pregunta 4, correcta
 (20202003002, 5015, 1, 30580, 5, 9); -- Pregunta 5, correcta
 
-INSERT INTO Crea (cod_profesor, cod_asignatura, grupo, cod_estudiante, id_pregunta, id_respuesta, id_examen, examen_finalizado, id_salon)
+INSERT INTO Crea (cod_profesor, cod_asignatura, grupo, cod_estudiante, id_pregunta, id_respuesta, id_examen, tipo_examen, examen_finalizado, id_salon)
 VALUES
-(30590, 5014, 1, 20142005141, 1, 1, 1, FALSE, NULL), -- Examen 1 creado
-(30580, 5015, 1, 20152005073, 2, 3, 2, FALSE, NULL); -- Examen 2 creado
+(30590, 5014, 1, 20142005141, 1, 1, 1, 1, FALSE, NULL), -- Examen del 1er corte
+(30580, 5015, 1, 20152005073, 2, 3, 2, 4, FALSE, NULL);    -- Examen final
 
 -- Programa (Exámenes programados)
 INSERT INTO Programa (cod_profesor, cod_asignatura, grupo, cod_estudiante, id_pregunta, id_respuesta, id_examen, fecha_examen, hora_examen)

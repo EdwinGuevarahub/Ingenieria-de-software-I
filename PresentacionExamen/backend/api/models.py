@@ -38,6 +38,7 @@ class Crea(models.Model):
     id_pregunta = models.IntegerField()
     id_respuesta = models.IntegerField()
     id_examen = models.IntegerField()
+    tipo_examen = models.ForeignKey('Tipoexamen', models.DO_NOTHING, db_column='tipo_examen')
     examen_finalizado = models.BooleanField()
     id_salon = models.IntegerField(blank=True, null=True)
 
@@ -197,6 +198,15 @@ class Selecciona(models.Model):
         managed = False
         db_table = 'selecciona'
         unique_together = (('cod_profesor', 'cod_asignatura', 'grupo', 'cod_estudiante', 'id_pregunta', 'id_examen', 'resp_seleccionada'),)
+
+
+class Tipoexamen(models.Model):
+    id_tipo_examen = models.IntegerField(primary_key=True)
+    nombre_tipo_examen = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False
+        db_table = 'tipoexamen'
 
 
 class Tipospreguntas(models.Model):
