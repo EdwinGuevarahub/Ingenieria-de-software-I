@@ -1,0 +1,76 @@
+@startuml CU6
+title Diagrama de Clases para CU-6: Consultar Nota
+
+' Clase Estudiante
+class Estudiante {
+    - id: int
+    - nombre: string
+    - correo: string
+    + consultarNota(asignatura: Asignatura, examen: Examen): Nota
+}
+
+' Clase ValidarEstudiante
+class ValidarEstudiante {
+    + validarInscripcion(asignatura: Asignatura, estudiante: Estudiante): bool
+}
+
+' Clase Docente
+class Docente {
+    - id: int
+    - nombre: string
+    - correo: string
+    + consultarNotasGrupo(asignatura: Asignatura, examen: Examen): List<Nota>
+}
+
+' Clase ValidarDocente
+class ValidarDocente {
+    + validarImparticion(asignatura: Asignatura, docente: Docente): bool
+}
+
+' Clase UIPresentacionNota
+class UIPresentacionNota {
+    + solicitarConsultaNotas(usuario: Usuario, asignatura: Asignatura): void
+    + mostrarNotas(notas: List<Nota>): void
+}
+
+' Clase Asignatura
+class Asignatura {
+    - id: int
+    - nombre: string
+    + esImpartidaPor(docente: Docente): bool
+    + esCursadaPor(estudiante: Estudiante): bool
+}
+
+' Clase HabilitarNotas
+class HabilitarNotas {
+    + validarFinalizacionExamen(examen: Examen): bool
+    + obtenerNotas(examen: Examen): List<Nota>
+}
+
+' Clase Examen
+class Examen {
+    - id: int
+    - titulo: string
+    - descripcion: string
+    - estado: string
+    + obtenerNotas(): List<Nota>
+}
+
+' Clase Nota
+class Nota {
+    - id: int
+    - puntaje: float
+    - comentario: string
+    + obtenerNota(): float
+}
+
+' Relaciones
+Estudiante --> UIPresentacionNota : "interactúa con"
+Docente -->  UIPresentacionNota : "interactúa con"
+UIPresentacionNota --> ValidarDocente : "Valida"
+UIPresentacionNota --> ValidarEstudiante : "Valida"
+ValidarEstudiante -->  Asignatura : "Consulta Asignatura"
+ValidarDocente -->  Asignatura : "Consulta Asignatura"
+Asignatura  --> HabilitarNotas: "solicita habilitación"
+HabilitarNotas --> Examen : "obtiene notas de"
+Examen --> Nota : "tiene"

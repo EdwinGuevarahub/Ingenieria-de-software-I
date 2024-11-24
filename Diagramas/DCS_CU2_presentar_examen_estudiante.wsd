@@ -14,7 +14,7 @@ class UIPresentacion {
 }
 
 class ValidarEstudiante {
-    + validar(estudiante: Estudiante): bool
+    + validarInscripcion(asignatura: Asignatura, estudiante: Estudiante): bool
 }
 
 class Asignatura {

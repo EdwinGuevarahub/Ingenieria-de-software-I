@@ -13,7 +13,7 @@ class UIPresentacion {
 }
 
 class ValidarDocente {
-    + validar(docente: Docente): bool
+    + validarImparticion(asignatura: Asignatura, docente: Docente): bool
 }
 
 class Asignatura {

@@ -1,0 +1,20 @@
+@startuml CU6
+title Diagrama de colaboración para CU-6: Consultar Nota
+
+actor Usuario as "Estudiante o Docente"
+
+participant UIPresentacion as "UI Presentación Nota"
+control ValidarUsuario as "Validar Usuario"
+participant Asignatura as "Asignatura"
+control HabilitarNotas as "Habilitar Notas"
+participant Examen as "Examen"
+
+' Flujo principal
+Usuario -> UIPresentacion : 1. Solicitar consulta de notas
+UIPresentacion -> ValidarUsuario : 2. Validar usuario (rol y autenticación)
+ValidarUsuario -> Asignatura : 3. Validar asignatura (inscripción o impartición)
+Asignatura -> HabilitarNotas : 4. Validar finalización del examen
+HabilitarNotas -> Examen : 5. Obtener notas del examen
+UIPresentacion <-- HabilitarNotas : 6. Mostrar notas al usuario
+
+@enduml

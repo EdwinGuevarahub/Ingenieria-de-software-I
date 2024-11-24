@@ -13,7 +13,7 @@ class UIPresentacion {
 }
 
 class ValidarDocente {
-    + validar(docente: Docente): bool
+    + validarImparticion(asignatura: Asignatura, docente: Docente): bool
 }
 
 class Asignatura {
@@ -34,7 +34,7 @@ class Examen {
 }
 
 Docente --> UIPresentacion : "interactúa con"
-UIPresentacion --> ValidarDocente : "solicita informacion"
-UIPresentacion --> Asignatura : "consulta que imparte"
+UIPresentacion --> ValidarDocente : "solicita validación"
+ValidarDocente --> Asignatura : "consulta Asignatura"
 Asignatura --> Examen: "consulta horarios"
 @enduml

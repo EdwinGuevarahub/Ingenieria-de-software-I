@@ -35,5 +35,5 @@ class ValidarEstudiante {
 
 Estudiante --> UI_Presentacion_Examen : "interactúa con"
 UI_Presentacion_Examen --> ValidarEstudiante : "solicita validación"
-UI_Presentacion_Examen --> Asignatura : "consulta inscripción"
+ValidarEstudiante --> Asignatura : "consulta Asignatura"
 Asignatura --> Examen : "obtiene información"
