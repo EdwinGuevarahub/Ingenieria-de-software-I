@@ -21,4 +21,10 @@ La programación solo será válida si:
 - El salón está disponibles.
 end note
 
+note right of UC_DefinirSalon
+El sistema asigna el salón
+end note
+
 @enduml
+
+/' comentario:el sistema asigna el salon '/
