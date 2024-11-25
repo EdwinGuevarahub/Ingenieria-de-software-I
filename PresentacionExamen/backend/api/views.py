@@ -79,8 +79,6 @@ class ExamQuestionaireViewSet(ViewSet):
         # Usa question_id para manejar la lógica
         s_exam_id = exam_id
 
-        # Instancia clase
-        # Llamado metodo para obtener info de preguntas
         asignaturas = Estudiantes.objects.all()  # Obtén los registros del modelo
         serializer = EstudianteSerializer(asignaturas, many=True)  # Serializa los datos
 
@@ -478,6 +476,13 @@ class NotesViewSet(ViewSet):
         return Response(o_data)
 
 class QuestionViewSet(ViewSet):
+    #get questions per subject
+    def list():
+        o_data = {
+
+            }
+        return Response(o_data)
+
     # GET - retrieve question per question_id
     def retrieve(self, request):
         o_data = {
@@ -507,4 +512,16 @@ class SalonViewSet(ViewSet):
                     510
                 ]
             }
+        return Response(o_data)
+
+class SubjectViewSet(ViewSet):
+    # GET - subjects info based on teacher_id provided
+    def list(self, request):
+        o_data = {
+            "subjectList": [
+                {"cod_asignatura":14, "nom_asignatura":"Calculo Diferencial"},
+                {"cod_asignatura":15, "nom_asignatura":"Calculo Integral"},
+                {"cod_asignatura":16, "nom_asignatura":"Ecuaciones Diferenciales"},
+            ]
+        }
         return Response(o_data)

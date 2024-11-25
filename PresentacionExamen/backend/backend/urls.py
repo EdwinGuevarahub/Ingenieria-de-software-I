@@ -49,6 +49,7 @@ router.register(r'api/exam', views.ExamViewSet, basename='exam_info')
 router.register(r'api/notes', views.NotesViewSet, basename='notes_info')
 router.register(r'api/question', views.QuestionViewSet, basename='question_info')
 router.register(r'api/salon', views.SalonViewSet, basename='salon_info')
+router.register(r'api/subject', views.SubjectViewSet, basename='subject_info')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
