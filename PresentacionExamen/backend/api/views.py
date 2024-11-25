@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
+from datetime import datetime
 from .models import (
     Asignaturas,
     Corresponde,
@@ -502,26 +503,93 @@ class QuestionViewSet(ViewSet):
 class SalonViewSet(ViewSet):
     # GET - list available salon info, based on id, or date provided in body
     def list(self, request):
+         # Obtener los parámetros de consulta
+        date = request.query_params.get('date')
+        time = request.query_params.get('time')
+
+        # Validar parámetros
+        if not date or not time:
+            return Response(
+                {"error": "Los parámetros 'date' y 'time' son obligatorios."},
+                status=400
+            )
+
+        # Convertir los parámetros a tipos datetime
+        try:
+            query_date = datetime.strptime(date, "%Y-%m-%d").date()
+            query_time = datetime.strptime(time, "%H:%M:%S").time()
+        except ValueError:
+            return Response(
+                {"error": "El formato de 'date' debe ser 'YYYY-MM-DD' y 'time' debe ser 'HH:MM'."},
+                status=400
+            )
+
+        # Obtener los exámenes programados en la fecha y hora dadas
+        programas_en_horario = Programa.objects.filter(
+            fecha_examen=query_date,
+            hora_examen__lte=query_time
+        )
+
+        # print("Programas encontrados:")
+        # for programa in programas_en_horario:
+        #     print(f"ID Examen: {programa.id_examen}, Fecha: {programa.fecha_examen}, Hora: {programa.hora_examen}")
+
+        # Obtener los salones ocupados asociados a esos exámenes
+        salones_ocupados = Crea.objects.filter(
+            id_examen__in=programas_en_horario.values_list('id_examen', flat=True)
+        ).exclude(id_salon__isnull=True).values_list('id_salon', flat=True)
+
+        #print("Salones ocupados encontrados:", list(salones_ocupados))
+
+        # Verificar si hay salones ocupados
+        if salones_ocupados.exists():
+            # Filtrar los salones disponibles
+            salones_disponibles = Salones.objects.exclude(id_salon__in=salones_ocupados)
+        else:
+            # Si no hay salones ocupados, devolver todos los salones
+            salones_disponibles = Salones.objects.all()
+
+        # Construir la respuesta
+        response = [
+            {"id_salon": salon.id_salon, "capacidad": salon.capacidad}
+            for salon in salones_disponibles
+        ]
+
         o_data = {
-                "salonList": [
-                    201,
-                    202,
-                    302,
-                    405,
-                    209,
-                    510
-                ]
+                "salonList": response
             }
+
         return Response(o_data)
 
 class SubjectViewSet(ViewSet):
     # GET - subjects info based on teacher_id provided
     def list(self, request):
+        # Obtener el teacher_id del header
+        teacher_id = request.query_params.get('teacher_id')
+        #teacher_id = request.META.get('HTTP_TEACHER_ID')
+        #teacher_id = request.headers.get('teacher_id')
+        #print('teacher_id',teacher_id)
+
+        if not teacher_id:
+            return Response(
+                {"error": "El header 'teacher_id' es obligatorio."},
+                status=400
+            )
+
+        # Filtrar las materias impartidas por el docente
+        materias = Imparte.objects.filter(cod_profesor=teacher_id).select_related('cod_asignatura')
+
+        # Verificar si se encontraron resultados
+        if not materias.exists():
+            return Response(
+                {"message": "No se encontraron materias para el docente proporcionado."},
+                status=404
+            )
+
+        # Serializar los datos
+        serialized_materias = AsignaturaSerializer([materia.cod_asignatura for materia in materias], many=True)
         o_data = {
-            "subjectList": [
-                {"cod_asignatura":14, "nom_asignatura":"Calculo Diferencial"},
-                {"cod_asignatura":15, "nom_asignatura":"Calculo Integral"},
-                {"cod_asignatura":16, "nom_asignatura":"Ecuaciones Diferenciales"},
-            ]
+            "subjectList":serialized_materias.data
         }
-        return Response(o_data)
+
+        return Response(o_data, status=200)

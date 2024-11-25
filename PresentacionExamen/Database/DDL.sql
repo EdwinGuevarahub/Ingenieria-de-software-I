@@ -26,7 +26,7 @@ CREATE TABLE Profesores (
 
 -- Tabla Salones
 CREATE TABLE Salones (
-    id_salon SERIAL PRIMARY KEY,              -- Identificador del salón
+    id_salon INT PRIMARY KEY,              -- Identificador del salón
     capacidad SMALLINT NOT NULL CHECK (capacidad BETWEEN 10 AND 40)  -- Capacidad entre 10 y 40
 );
 

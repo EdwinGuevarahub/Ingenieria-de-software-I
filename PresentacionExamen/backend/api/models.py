@@ -175,7 +175,7 @@ class Respuestas(models.Model):
 
 
 class Salones(models.Model):
-    id_salon = models.AutoField(primary_key=True)
+    id_salon = models.IntegerField(primary_key=True)
     capacidad = models.SmallIntegerField()
 
     class Meta:

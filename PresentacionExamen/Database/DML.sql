@@ -38,6 +38,14 @@ VALUES
 (20262009002, 'Natalia Morales', 'Calle de las Flores 22', '3245678901', 173, '1994-06-30'),
 (20272010001, 'Gabriel Diaz', 'Avenida de los Pinos 33', '3256789012', 178, '1997-01-18');
 
+-- Salones
+INSERT INTO Salones (id_salon, capacidad) VALUES
+(202,20), -- Salón 1: Capacidad para 20 personas
+(303,30), -- Salón 2: Capacidad para 30 personas
+(102,15), -- Salón 3: Capacidad para 15 personas
+(403,40), -- Salón 4: Capacidad máxima
+(404,25); -- Salón 5: Capacidad para 25 personas
+
 -- Imparte (Profesores ↔ Asignaturas)
 INSERT INTO Imparte (cod_profesor, cod_asignatura, grupo, horario) VALUES
 (30590, 5014, 1, 'Lunes 6:00 AM'),
@@ -124,13 +132,14 @@ VALUES
 INSERT INTO Crea (cod_profesor, cod_asignatura, grupo, cod_estudiante, id_pregunta, id_respuesta, id_examen, tipo_examen, examen_finalizado, id_salon)
 VALUES
 (30590, 5014, 1, 20142005141, 1, 1, 1, 1, FALSE, NULL), -- Examen del 1er corte
-(30580, 5015, 1, 20152005073, 2, 3, 2, 4, FALSE, NULL);    -- Examen final
+(30580, 5015, 1, 20152005073, 2, 3, 2, 4, FALSE, NULL),    -- Examen final
+(30580, 5015, 1, 20152005073, 2, 3, 3, 3, FALSE, 102);    -- Examen 3er corte
 
 -- Programa (Exámenes programados)
 INSERT INTO Programa (cod_profesor, cod_asignatura, grupo, cod_estudiante, id_pregunta, id_respuesta, id_examen, fecha_examen, hora_examen)
 VALUES
 (30590, 5014, 1, 20142005141, 1, 1, 1, '2024-12-01', '09:00:00'), -- Examen 1 programado
-(30580, 5015, 1, 20152005073, 2, 3, 2, '2024-12-02', '10:00:00'); -- Examen 2 programado
+(30580, 5015, 1, 20152005073, 2, 3, 3, '2024-12-02', '10:00:00'); -- Examen 2 programado
 
 -- Selecciona (Respuestas seleccionadas por estudiantes)
 INSERT INTO Selecciona (cod_profesor, cod_asignatura, grupo, cod_estudiante, id_pregunta, id_examen, id_respuesta, resp_seleccionada, fecha_seleccion)
