@@ -551,11 +551,60 @@ class QuestionViewSet(ViewSet):
             )
 
     # GET - retrieve question per question_id
-    def retrieve(self, request):
-        o_data = {
+    def retrieve(self, request, pk=None):
+        try:
+            # Subconsulta para obtener el tiempo de la pregunta desde `Ingresa`
+            tiempo_pregunta_subquery = Ingresa.objects.filter(
+                id_pregunta=pk
+            ).values('tiempo_pregunta')[:1]
 
+            # Obtener la pregunta con sus respuestas y el tiempo
+            pregunta = Preguntas.objects.filter(id_pregunta=pk).annotate(
+                tiempo_pregunta=Subquery(tiempo_pregunta_subquery),
+                respuesta_id=F('corresponde__id_respuesta'),
+                respuesta_descripcion=F('corresponde__id_respuesta__desc_respuesta'),
+                es_correcta=F('corresponde__correcta')
+            ).values(
+                'id_pregunta',
+                'desc_pregunta',
+                'tipo_pregunta',
+                'tiempo_pregunta',
+                'respuesta_id',
+                'respuesta_descripcion',
+                'es_correcta'
+            )
+
+            if not pregunta.exists():
+                return Response(
+                    {"error": f"No se encontró la pregunta con ID {pk}."},
+                    status=404
+                )
+
+            # Construir la pregunta con opciones
+            question = {
+                "idQuestion": pk,
+                "typeQuestion": pregunta[0]['tipo_pregunta'],  # Tipo de pregunta
+                "timeQuestion": pregunta[0]['tiempo_pregunta'],  # Tiempo de la pregunta
+                "questionStatement": pregunta[0]['desc_pregunta'],  # Enunciado
+                "options": [
+                    {
+                        "idOption": p['respuesta_id'],
+                        "textOption": p['respuesta_descripcion']
+                    }
+                    for p in pregunta
+                ]
             }
-        return Response(o_data)
+
+            # Respuesta final
+            response_data = {"questionsList": [question]}
+
+            return Response(response_data, status=200)
+
+        except Exception as e:
+            return Response(
+                {"error": f"Error al obtener la pregunta: {str(e)}"},
+                status=500
+            )
 
     # POST - create question
     def create(self, request):
