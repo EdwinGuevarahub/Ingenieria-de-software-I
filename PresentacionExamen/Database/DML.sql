@@ -104,7 +104,9 @@ VALUES
 ('Switch, Router, Cables de red'),                    -- Respuesta para Pregunta 4
 ('Servidor Web, Cliente'),                            -- Respuesta para Pregunta 4
 ('80'),                                               -- Respuesta para Pregunta 5
-('443');                                              -- Respuesta incorrecta para Pregunta 5
+('443'),                                              -- Respuesta incorrecta para Pregunta 5
+('Silicona'),                                         -- Respuesta incorrecta para Pregunta 1
+('Ganas de hacerlo');                                 -- Respuesta incorrecta para Pregunta 1
 
 -- Corresponde
 INSERT INTO Corresponde (id_pregunta, id_respuesta, correcta)
@@ -118,7 +120,9 @@ VALUES
 (4, 7, TRUE), -- Pregunta 4, correcta
 (4, 8, TRUE), -- Pregunta 4, otra respuesta correcta
 (5, 9, TRUE), -- Pregunta 5, respuesta correcta
-(5, 10, FALSE); -- Pregunta 5, respuesta incorrecta
+(5, 10, FALSE), -- Pregunta 5, respuesta incorrecta
+(1, 11, FALSE), -- Pregunta 1, respuesta incorrecta
+(1, 12, FALSE); -- Pregunta 2, respuesta incorrecta
 
 -- Evalua (Estudiantes responden preguntas)
 INSERT INTO Evalua (cod_estudiante, cod_asignatura, grupo, cod_profesor, id_pregunta, id_respuesta)
@@ -134,6 +138,11 @@ VALUES
 (30590, 5014, 1, 20142005141, 1, 1, 1, 1, FALSE, NULL), -- Examen del 1er corte
 (30580, 5015, 1, 20152005073, 2, 3, 2, 4, FALSE, NULL),    -- Examen final
 (30580, 5015, 1, 20152005073, 2, 3, 3, 3, FALSE, 102);    -- Examen 3er corte
+
+INSERT INTO Ingresa (cod_profesor, cod_asignatura, grupo, id_pregunta, id_respuesta, tiempo_pregunta)
+VALUES
+(30590, 5014, 1, 1, 1, 15), -- Profesor Hans Lopez registra una pregunta para Circuitos Eléctricos I. 15 minutos para responder
+(30580, 5015, 1, 2, 3, 10); -- Profesor Francisco Zamora registra una pregunta para Circuitos Eléctricos II. 10 minutos para responder
 
 -- Programa (Exámenes programados)
 INSERT INTO Programa (cod_profesor, cod_asignatura, grupo, cod_estudiante, id_pregunta, id_respuesta, id_examen, fecha_examen, hora_examen)

@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from datetime import datetime
+from django.db.models import F, OuterRef, Subquery
 from .models import (
     Asignaturas,
     Corresponde,
@@ -478,11 +479,76 @@ class NotesViewSet(ViewSet):
 
 class QuestionViewSet(ViewSet):
     #get questions per subject
-    def list():
-        o_data = {
+    def list(self, request):
+        try:
+            subject = request.query_params.get('subject')
 
+            if not subject:
+                return Response(
+                    {"error": "El parámetro 'subject' es obligatorio."},
+                    status=400
+                )
+
+            # Subconsulta para obtener el tiempo de cada pregunta desde Ingresa
+            tiempo_pregunta_subquery = Ingresa.objects.filter(
+                id_pregunta=OuterRef('id_pregunta'),
+                cod_asignatura=subject
+            ).values('tiempo_pregunta')[:1]
+
+            # Consultar preguntas relacionadas con respuestas y tiempo
+            preguntas = Preguntas.objects.filter(
+                id_pregunta__in=Ingresa.objects.filter(cod_asignatura=subject).values_list('id_pregunta', flat=True)
+            ).annotate(
+                tiempo_pregunta=Subquery(tiempo_pregunta_subquery),
+                respuesta_id=F('corresponde__id_respuesta'),
+                respuesta_descripcion=F('corresponde__id_respuesta__desc_respuesta'),
+                es_correcta=F('corresponde__correcta')
+            ).values(
+                'id_pregunta',
+                'desc_pregunta',
+                'tipo_pregunta',
+                'tiempo_pregunta',
+                'respuesta_id',
+                'respuesta_descripcion',
+                'es_correcta'
+            )
+
+            if not preguntas.exists():
+                return Response(
+                    {"error": f"No se encontraron preguntas para la asignatura con ID {subject}."},
+                    status=404
+                )
+
+            # Agrupar preguntas y sus opciones
+            questions_list = {}
+            for pregunta in preguntas:
+                id_pregunta = pregunta['id_pregunta']
+                if id_pregunta not in questions_list:
+                    questions_list[id_pregunta] = {
+                        "idQuestion": id_pregunta,
+                        "typeQuestion": pregunta['tipo_pregunta'],
+                        "timeQuestion": pregunta['tiempo_pregunta'],
+                        "questionStatement": pregunta['desc_pregunta'],
+                        "options": []
+                    }
+
+                questions_list[id_pregunta]["options"].append({
+                    "idOption": pregunta['respuesta_id'],
+                    "textOption": pregunta['respuesta_descripcion']
+                })
+
+            # Convertir el diccionario en una lista dentro de la clave `questionsList`
+            response_data = {
+                "questionsList": list(questions_list.values())
             }
-        return Response(o_data)
+
+            return Response(response_data, status=200)
+
+        except Exception as e:
+            return Response(
+                {"error": f"Error al obtener las preguntas: {str(e)}"},
+                status=500
+            )
 
     # GET - retrieve question per question_id
     def retrieve(self, request):
