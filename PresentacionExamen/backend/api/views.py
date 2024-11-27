@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from datetime import datetime
-from django.db.models import F, OuterRef, Subquery
+from django.db.models import F, OuterRef, Subquery, Sum
 from .models import (
     Asignaturas,
     Corresponde,
@@ -166,96 +166,81 @@ class ExamQuestionaireViewSet(ViewSet):
 class ExamScheduledViewSet(ViewSet):
     # GET - Retrieve exam scheduled data
     def list(self, request):
-        s_subject_id = request.query_params.get('subject_id', None)
-        s_student_id = request.query_params.get('student_id', None)
+        teacher_id = request.query_params.get('teacher_id', None)
+        student_id = request.query_params.get('student_id', None)
+        subject = request.query_params.get('subject_id', None)
 
-        #estudiante
-        o_data = {
-            "examList": [
-                {
-                "subject": 120,
-                "subjectName": "Calculo Integral",
-                "typeExam": 1,
-                "date": "Mon Nov 20 2024 06:12:45 GMT-0500",
-                "salonNum": 202,
-                "salonBuilding": "Sabio Caldas",
-                "numQuestions": 10,
-                "duration": 30,
-                "isProgrammed": True
-                },
-                {
-                "subject": 115,
-                "subjectName": "Calculo Diferencial",
-                "typeExam": 1,
-                "date": "Fri Nov 24 2024 12:47:09 GMT-0500",
-                "salonNum": 201,
-                "salonBuilding": "Sabio Caldas",
-                "numQuestions": 25,
-                "duration": 60,
-                "isProgrammed": True
-                },
-                {
-                "subject": 4,
-                "subjectName": "Algebra Lineal",
-                "typeExam": 1,
-                "date": "Thu Nov 30 2024 17:58:41 GMT-0500",
-                "salonNum": 305,
-                "salonBuilding": "Sabio Caldas",
-                "numQuestions": 40,
-                "duration": 100,
-                "isProgrammed": True
-                }
-            ]
-        }
+        if not subject or (not teacher_id and not student_id):
+            return Response(
+                {"error": "Los encabezados 'teacher_id' o 'student_id' y 'subject' son obligatorios."},
+                status=400
+            )
 
-        #docente
-        o_data = {
-            "examList": [
-                {
-                "subject": 120,
-                "subjectName": "Calculo Integral",
-                "date": "Mon Nov 20 2024 06:12:45 GMT-0500",
-                "salonNum": 202,
-                "salonBuilding": "Sabio Caldas",
-                "numQuestions": 10,
-                "duration": 30,
-                "isProgrammed": True
-                },
-                {
-                "subject": 115,
-                "subjectName": "Calculo Diferencial",
-                "typeExam": 1,
-                "date": "Fri Nov 24 2024 12:47:09 GMT-0500",
-                "salonNum": 201,
-                "salonBuilding": "Sabio Caldas",
-                "numQuestions": 25,
-                "duration": 60,
-                "isProgrammed": True
-                },
-                {
-                "subject": 210,
-                "subjectName": "Física 1",
-                "typeExam": 1,
-                "date": "",
-                "salonNum": 0,
-                "salonBuilding": "",
-                "numQuestions": 40,
-                "duration": 100,
-                "isProgrammed": false
-                },
-                {
-                "subject": 211,
-                "subjectName": "Física 2",
-                "typeExam": 1,
-                "date": "",
-                "salonNum": 0,
-                "salonBuilding": "",
-                "numQuestions": 4,
-                "duration": 10,
-                "isProgrammed": false
+        try:
+            # Base query: filtrar exámenes por asignatura
+            exams = Programa.objects.filter(cod_asignatura=subject)
+
+            # Filtrar por docente
+            if teacher_id:
+                exams = exams.filter(cod_profesor=teacher_id)
+
+            # Filtrar por estudiante
+            elif student_id:
+                exams = exams.filter(cod_estudiante=student_id)
+
+            if not exams.exists():
+                return Response(
+                    {"examList": []},
+                    status=200
+                )
+
+            exam_list = []
+            for exam in exams:
+                # Obtener información del salón y tipo de examen desde Crea
+                crea_entry = Crea.objects.filter(
+                    id_examen=exam.id_examen
+                ).select_related('tipo_examen').first()
+
+                # Obtener preguntas relacionadas al examen desde Corresponde -> Ingresa
+                preguntas = Corresponde.objects.filter(
+                    id_pregunta=exam.id_pregunta
+                )
+
+                # Calcular duración sumando tiempos desde Ingresa
+                total_duration = Ingresa.objects.filter(
+                    id_pregunta__in=preguntas.values_list('id_pregunta', flat=True)
+                ).aggregate(total_time=Sum('tiempo_pregunta'))['total_time'] or 0
+
+                # Construir el diccionario para el examen
+                exam_data = {
+                    "subject": exam.cod_asignatura,
+                    "subjectName": exam.cod_asignatura.nombre_asignatura if hasattr(exam.cod_asignatura, 'nombre_asignatura') else "",
+                    "date": f"{exam.fecha_examen} {exam.hora_examen}",
+                    "salonNum": crea_entry.id_salon if crea_entry else "",
+                    "salonBuilding": "",  # Campo no definido
+                    "numQuestions": preguntas.count(),
+                    "duration": total_duration,
+                    "isProgrammed": True
                 }
-            ]
-        }
+
+                # Agregar tipo_examen si es estudiante
+                if student_id and crea_entry:
+                    exam_data["examType"] = crea_entry.tipo_examen.id_tipo_examen if crea_entry.tipo_examen else None
+
+                exam_list.append(exam_data)
+
+            # Respuesta final
+            response_data = {
+                "examList": exam_list
+            }
+
+            return Response(response_data, status=200)
+
+        except Exception as e:
+            return Response(
+                {"error": f"Error al obtener los exámenes: {str(e)}"},
+                status=500
+            )
 
         return Response(o_data)
 
