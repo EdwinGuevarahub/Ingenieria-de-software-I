@@ -290,12 +290,44 @@ class ExamScheduledViewSet(ViewSet):
 class ExamViewSet(ViewSet):
     # GET - get exam settings based on id
     def list(self, request):
-        o_data = {
+        # Leer parámetros de consulta
+        subject = request.query_params.get('subject')
+        exam_type = request.query_params.get('examType')
+
+        if not subject or not exam_type:
+            return Response(
+                {"error": "Los parámetros 'subject' y 'examType' son obligatorios."},
+                status=400
+            )
+
+        try:
+            # Buscar el examen con la combinación de asignatura y tipo de examen
+            exam = Crea.objects.filter(
+                cod_asignatura=subject,
+                tipo_examen=exam_type
+            ).values('id_examen').first()
+
+            # Si el examen ya existe
+            if exam:
+                return Response({
+                    "status": 200,
+                    "message": "La configuración del examen ya existe",
+                    "available": False,
+                    "id_examen": exam['id_examen']
+                }, status=200)
+
+            # Si el examen no existe
+            return Response({
                 "status": 200,
-                "message": "El examen ya se encuentra creado",
-                "isCreate": True
-            }
-        return Response(o_data)
+                "message": "La configuración del examen puede ser creada",
+                "available": True
+            }, status=200)
+
+        except Exception as e:
+            return Response(
+                {"error": f"Error al verificar el examen: {str(e)}"},
+                status=500
+            )
 
     # POST - create an exam
     def create(self, request):
