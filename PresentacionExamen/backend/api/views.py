@@ -21,6 +21,7 @@ from .models import (
     Salones,
     Selecciona,
     Tipospreguntas,
+    Tipoexamen
 )
 
 from .serializers import (
@@ -215,9 +216,12 @@ class ExamScheduledViewSet(ViewSet):
 
                 # Construir el diccionario para el examen
                 exam_data = {
+                    "id_examen": exam.id_examen,
                     "subject": exam.cod_asignatura,
                     "subjectName": exam.cod_asignatura.nombre_asignatura if hasattr(exam.cod_asignatura, 'nombre_asignatura') else "",
                     "date": f"{exam.fecha_examen} {exam.hora_examen}",
+                    "fecha_examen": exam.fecha_examen,
+                    "hora_examen": exam.hora_examen,
                     "salonNum": crea_entry.id_salon if crea_entry else "",
                     "numQuestions": preguntas.count(),
                     "duration": total_duration,
@@ -377,13 +381,111 @@ class ExamViewSet(ViewSet):
         return Response(o_data)
 
     # PUT - edit exam info
-    def update(self, request):
-        o_data = {
+    @action(detail=False, methods=['put'])
+    def updateExam(self, request):
+        try:
+            # Extraer X-Code desde los query params
+            cod_profesor = request.query_params.get("X-Code")
+            if not cod_profesor:
+                return Response({"error": "El parámetro 'X-Code' es obligatorio."}, status=400)
+
+            # Verificar o crear la instancia de Imparte
+            imparte_instance = Imparte.objects.filter(cod_profesor=cod_profesor).first()
+            if not imparte_instance:
+                return Response({"error": "El profesor especificado no está asociado a ninguna asignatura."}, status=404)
+
+            # Extraer los datos del body
+            exam_data = request.data.get("exam")
+            if not exam_data:
+                return Response({"error": "El campo 'exam' es obligatorio."}, status=400)
+
+            id_exam = exam_data.get("idExam")
+            subject = exam_data.get("subject")
+            type_exam = exam_data.get("typeExam")
+            duration = exam_data.get("duration")
+            questions = exam_data.get("questions", [])
+
+            if not questions:
+                return Response({"error": "La lista de 'questions' no puede estar vacía."}, status=400)
+
+            # Validar que el tipo de examen exista
+            tipo_examen_instance = Tipoexamen.objects.filter(id_tipo_examen=type_exam).first()
+            if not tipo_examen_instance:
+                return Response({"error": f"El tipo de examen con id {type_exam} no existe."}, status=404)
+
+            # Obtener estudiantes relacionados a la materia a través de Cursa
+            estudiantes = Cursa.objects.filter(
+                cod_asignatura=subject
+            )
+
+            if not estudiantes.exists():
+                return Response({"error": "No se encontraron estudiantes inscritos en la asignatura."}, status=404)
+
+            # Obtener preguntas actuales relacionadas al examen
+            current_question_ids = list(Crea.objects.filter(id_examen=id_exam).values_list("id_pregunta", flat=True))
+
+            # Identificar preguntas en la nueva lista
+            new_question_ids = [q.get("idQuestion") for q in questions]
+
+            # Eliminar preguntas que ya no están en la nueva lista
+            questions_to_remove = set(current_question_ids) - set(new_question_ids)
+            if questions_to_remove:
+                Crea.objects.filter(id_examen=id_exam, id_pregunta__in=questions_to_remove).delete()
+
+            # Agregar preguntas nuevas o relacionar existentes para cada estudiante
+            for question_data in questions:
+                question_id = question_data["idQuestion"]
+                question, _ = Preguntas.objects.get_or_create(
+                    id_pregunta=question_id,
+                    defaults={
+                        "desc_pregunta": question_data["questionStatement"],
+                        "tipo_pregunta_id": question_data["typeQuestion"]
+                    }
+                )
+
+                # Procesar opciones de la pregunta
+                for option_data in question_data.get("options", []):
+                    option, _ = Respuestas.objects.get_or_create(
+                        id_respuesta=option_data["idOption"],
+                        defaults={"desc_respuesta": option_data["textOption"]}
+                    )
+
+                    # Crear o buscar relación en Corresponde
+                    corresponde_instance, _ = Corresponde.objects.get_or_create(
+                        id_pregunta=question,
+                        id_respuesta=option,
+                        defaults={"correcta": False}  # Cambiar si hay lógica para opciones correctas
+                    )
+
+                    # Crear o actualizar las relaciones en Evalua y Crea para cada estudiante
+                    for estudiante in estudiantes:
+                        evalua_instance, _ = Evalua.objects.get_or_create(
+                            cod_estudiante=estudiante,  # Instancia de Cursa
+                            cod_asignatura=subject,
+                            cod_profesor=imparte_instance,  # Instancia de Imparte
+                            grupo=1,  # Grupo fijo asumido
+                            id_pregunta=corresponde_instance,  # Instancia de Corresponde
+                            id_respuesta=corresponde_instance.id_respuesta.id_respuesta
+                        )
+                        Crea.objects.get_or_create(
+                            cod_profesor=imparte_instance,
+                            cod_asignatura=subject,
+                            grupo=1,
+                            cod_estudiante=evalua_instance,  # Relacionar al estudiante
+                            id_examen=id_exam,
+                            id_pregunta=corresponde_instance.id_pregunta.id_pregunta,
+                            id_respuesta=corresponde_instance.id_respuesta.id_respuesta,
+                            tipo_examen=tipo_examen_instance,
+                            defaults={"examen_finalizado": False}
+                        )
+
+            return Response({
                 "status": 200,
-                "message": "Examen editado con exito",
-                "isCreate": True
-            }
-        return Response(o_data)
+                "message": f"El examen fue actualizado exitosamente para {estudiantes.count()} estudiantes."
+            }, status=200)
+
+        except Exception as e:
+            return Response({"error": f"Error al actualizar el examen: {str(e)}"}, status=500)
 
 class NotesViewSet(ViewSet):
     # GET - retrieve notes based on role and subject
