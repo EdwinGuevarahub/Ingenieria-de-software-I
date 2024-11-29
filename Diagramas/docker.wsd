@@ -1,0 +1,20 @@
+@startuml test
+package "Dockerized Application" {
+    node "Frontend" {
+        [Browser] --> [Frontend Service]
+    }
+
+database "Database" {
+        [PostgreSQL]
+        }
+
+    node "Backend" {
+        [Backend Service]
+    }
+
+
+}
+
+[Frontend Service] -> [Backend Service]: HTTP (Port 8000)
+[Backend Service] -> [PostgreSQL]: SQL Queries
+@enduml
