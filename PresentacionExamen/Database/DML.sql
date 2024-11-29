@@ -1,10 +1,10 @@
 -- Profesores
-INSERT INTO Profesores (cod_profesor, nom_profesor, profesion, niv_escolaridad) VALUES
-(30590, 'Hans Lopez', 'Ingeniero Electrónico', 'Doctorado'),
-(30456, 'Jairo Soriano', 'Ingeniero Industrial', 'Maestría'),
-(30580, 'Francisco Zamora', 'Ingeniero Electrónico', 'Doctorado'),
-(30690, 'Adriana Segovia', 'Economista', 'Doctorado'),
-(30890, 'Natalia Vega', 'Gestora de Proyectos', 'Maestría');
+INSERT INTO Profesores (cod_profesor, nom_profesor, profesion, pw_profesor, niv_escolaridad, activo_profesor) VALUES
+(30590, 'Hans Lopez', 'Ingeniero Electrónico', 1234, 'Doctorado', TRUE),
+(30456, 'Jairo Soriano', 'Ingeniero Industrial', 1234, 'Maestría', TRUE),
+(30580, 'Francisco Zamora', 'Ingeniero Electrónico', 1234, 'Doctorado', TRUE),
+(30690, 'Adriana Segovia', 'Economista', 1234, 'Doctorado', TRUE),
+(30890, 'Natalia Vega', 'Gestora de Proyectos', 1234, 'Maestría', TRUE);
 
 -- Asignaturas
 INSERT INTO Asignaturas (cod_asignatura, nom_asignatura, credit_asignatura, inten_horaria) VALUES
@@ -15,28 +15,28 @@ INSERT INTO Asignaturas (cod_asignatura, nom_asignatura, credit_asignatura, inte
 (1324, 'Formulación y Evaluación de Proyectos', 3, 9);
 
 -- Estudiantes
-INSERT INTO Estudiantes (cod_estudiante, nom_estudiante, dir_estudiante, tel_estudiante, cod_carrera, fecha_nacimiento)
+INSERT INTO Estudiantes (cod_estudiante, nom_estudiante, dir_estudiante, tel_estudiante, cod_carrera, pw_estudiante, fecha_nacimiento, activo_estudiante)
 VALUES
-(20142005141, 'Steven Valencia', 'Avenida Sol 132', '3142873121', 173, '1996-10-14'),
-(20152005073, 'Ariana Ortiz', 'Avenida Luna 10', '3122345687', 173, '1997-03-07'),
-(20162007001, 'Miguel Rodriguez', 'Calle Hermosa 57', '3118934566', 178, '2000-02-02'),
-(20162007002, 'Sofía Guevara', 'Avenida Ocales 47', '3141321231', 178, '2005-08-02'),
-(20202003001, 'Katerine Perez', 'Calle Galerias 53', '3245668901', 179, '1990-12-20'),
-(20202003002, 'Felipe Mancilla', 'Avenida Only 67', '3216789012', 179, '1996-07-10'),
-(20202003003, 'Ana Lopez', 'Calle del Parque 123', '3123456789', 173, '1998-01-15'),
-(20212004001, 'Carlos Herrera', 'Avenida Siempre Viva 742', '3134567890', 178, '1995-11-30'),
-(20212004002, 'Luisa Ramirez', 'Calle del Sol 89', '3145678901', 179, '2001-05-20'),
-(20222005001, 'Mario Gomez', 'Avenida Primavera 45', '3156789012', 173, '1999-09-10'),
-(20222005002, 'Laura Medina', 'Calle Verano 67', '3167890123', 178, '1997-07-30'),
-(20232006001, 'Pedro Sanchez', 'Avenida Otoño 89', '3178901234', 179, '2002-12-15'),
-(20232006002, 'Juliana Torres', 'Calle Invierno 12', '3189012345', 173, '1996-04-25'),
-(20242007001, 'Sebastian Vargas', 'Avenida del Rio 34', '3190123456', 178, '2000-08-18'),
-(20242007002, 'Valentina Ruiz', 'Calle del Lago 56', '3201234567', 179, '1995-03-09'),
-(20252008001, 'David Castillo', 'Avenida de la Paz 78', '3212345678', 173, '1998-10-01'),
-(20252008002, 'Camila Gonzalez', 'Calle de la Esperanza 90', '3223456789', 178, '1999-11-20'),
-(20262009001, 'Jorge Martinez', 'Avenida del Bosque 11', '3234567890', 179, '2001-02-14'),
-(20262009002, 'Natalia Morales', 'Calle de las Flores 22', '3245678901', 173, '1994-06-30'),
-(20272010001, 'Gabriel Diaz', 'Avenida de los Pinos 33', '3256789012', 178, '1997-01-18');
+(20142005141, 'Steven Valencia', 'Avenida Sol 132', '3142873121', 173, 12345, '1996-10-14', TRUE),
+(20152005073, 'Ariana Ortiz', 'Avenida Luna 10', '3122345687', 173, 12345, '1997-03-07', TRUE),
+(20162007001, 'Miguel Rodriguez', 'Calle Hermosa 57', '3118934566', 178, 12345, '2000-02-02', TRUE),
+(20162007002, 'Sofía Guevara', 'Avenida Ocales 47', '3141321231', 178, 12345, '2005-08-02', TRUE),
+(20202003001, 'Katerine Perez', 'Calle Galerias 53', '3245668901', 179, 12345, '1990-12-20', TRUE),
+(20202003002, 'Felipe Mancilla', 'Avenida Only 67', '3216789012', 179, 12345, '1996-07-10', TRUE),
+(20202003003, 'Ana Lopez', 'Calle del Parque 123', '3123456789', 173, 12345, '1998-01-15', TRUE),
+(20212004001, 'Carlos Herrera', 'Avenida Siempre Viva 742', '3134567890', 178, 12345, '1995-11-30', TRUE),
+(20212004002, 'Luisa Ramirez', 'Calle del Sol 89', '3145678901', 179, 12345, '2001-05-20', TRUE),
+(20222005001, 'Mario Gomez', 'Avenida Primavera 45', '3156789012', 173, 12345, '1999-09-10', TRUE),
+(20222005002, 'Laura Medina', 'Calle Verano 67', '3167890123', 178, 12345, '1997-07-30', TRUE),
+(20232006001, 'Pedro Sanchez', 'Avenida Otoño 89', '3178901234', 179, 12345, '2002-12-15', TRUE),
+(20232006002, 'Juliana Torres', 'Calle Invierno 12', '3189012345', 173, 12345, '1996-04-25', TRUE),
+(20242007001, 'Sebastian Vargas', 'Avenida del Rio 34', '3190123456', 178, 12345, '2000-08-18', TRUE),
+(20242007002, 'Valentina Ruiz', 'Calle del Lago 56', '3201234567', 179, 12345, '1995-03-09', TRUE),
+(20252008001, 'David Castillo', 'Avenida de la Paz 78', '3212345678', 173, 12345, '1998-10-01', TRUE),
+(20252008002, 'Camila Gonzalez', 'Calle de la Esperanza 90', '3223456789', 178, 12345, '1999-11-20', TRUE),
+(20262009001, 'Jorge Martinez', 'Avenida del Bosque 11', '3234567890', 179, 12345, '2001-02-14', TRUE),
+(20262009002, 'Natalia Morales', 'Calle de las Flores 22', '3245678901', 173, 12345, '1994-06-30', TRUE),
+(20272010001, 'Gabriel Diaz', 'Avenida de los Pinos 33', '3256789012', 178, 12345, '1997-01-18', TRUE);
 
 -- Salones
 INSERT INTO Salones (id_salon, capacidad) VALUES
