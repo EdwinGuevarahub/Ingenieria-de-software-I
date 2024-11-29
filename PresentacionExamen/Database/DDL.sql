@@ -5,7 +5,7 @@ CREATE TABLE Estudiantes (
     dir_estudiante VARCHAR(50) NOT NULL,      -- Dirección del estudiante
     tel_estudiante CHAR(10) NOT NULL,         -- Teléfono del estudiante
     cod_carrera INT NOT NULL,                 -- Código de la carrera
-    pw_estudiante INT,                        -- Contrasena
+    pw_estudiante VARCHAR(50),                        -- Contrasena
     fecha_nacimiento DATE NOT NULL,            -- Fecha de nacimiento
     activo_estudiante BOOLEAN
 );
@@ -23,7 +23,7 @@ CREATE TABLE Profesores (
     cod_profesor INT PRIMARY KEY,             -- Código único del profesor (clave primaria)
     nom_profesor VARCHAR(50) NOT NULL,        -- Nombre del profesor
     profesion VARCHAR(50) NOT NULL,         -- Profesión
-    pw_profesor INT,                        -- Contrasena
+    pw_profesor VARCHAR(50),                        -- Contrasena
     niv_escolaridad VARCHAR(50) NOT NULL,      -- Nivel de escolaridad
     activo_profesor BOOLEAN
 );

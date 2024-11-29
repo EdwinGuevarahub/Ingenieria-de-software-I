@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from datetime import datetime
+from rest_framework.exceptions import AuthenticationFailed
 from django.db.models import F, OuterRef, Subquery, Sum
 from .models import (
     Asignaturas,
@@ -59,21 +60,54 @@ class ApiViewSet(ViewSet):
 
 class AuthViewSet(ViewSet):
     # POST - Validate user
-    def create(self, request, *args, **kwargs):
-        s_student_id = request.query_params.get('student_id', None)
-        s_password = request.data.get('pw')
+    def create(self, request):
+        try:
+            # Extraer encabezados
+            user_code = request.query_params.get('X-Code')
+            password = request.data.get('password')
 
-        # Instancia clase
-        # Llamado metodo de validacion
+            print('user_code',user_code)
+            print('password',password)
+            if not user_code or not password:
+                raise AuthenticationFailed("Credenciales inválidas.")
 
-        o_data = {
-            'is_active': True,
-            'userType': USER_TYPES['estudiante'],
-            'firstname': 'Gabriela',
-            'lastName': 'León',
-            'id': 20241595005
+            # Autenticar el usuario buscando en ambas tablas
+            user = Estudiantes.objects.filter(cod_estudiante=user_code).first()
+            user_type = 1  # Estudiante
+
+            if user:
+                user_password = user.pw_estudiante
+                user_active = user.activo_estudiante
+                user_name = user.nom_estudiante
+            else:
+                user = Profesores.objects.filter(cod_profesor=user_code).first()
+                user_type = 2  # Docente
+                user_password = user.pw_profesor if user else None
+                user_active = user.activo_profesor if user else False
+                user_name = user.nom_profesor if user else ""
+
+            if not user:
+                raise AuthenticationFailed("Usuario no encontrado.")
+
+            print('user_password',user_password)
+            # Validar contraseña
+            if password != user_password:
+                raise AuthenticationFailed("Contraseña incorrecta.")
+
+            # Respuesta de éxito
+            response_data = {
+                "isActive": user_active,
+                "userType": user_type,
+                "Name": user_name,
+                "id": user_code
             }
-        return Response(o_data)
+            return Response(response_data, status=200)
+
+        except AuthenticationFailed as e:
+            return Response({"error": str(e)}, status=401)
+
+        except Exception as e:
+            return Response({"error": f"Error al autenticar: {str(e)}"}, status=500)
 
 class ExamQuestionaireViewSet(ViewSet):
     # GET - pull questionaire questions based on exam_id provided

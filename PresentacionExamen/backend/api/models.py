@@ -64,7 +64,7 @@ class Estudiantes(models.Model):
     dir_estudiante = models.CharField(max_length=50)
     tel_estudiante = models.CharField(max_length=10)
     cod_carrera = models.IntegerField()
-    pw_estudiante = models.IntegerField(blank=True, null=True)
+    pw_estudiante = models.CharField(max_length=50, null=True)
     fecha_nacimiento = models.DateField()
     activo_estudiante = models.BooleanField(blank=True, null=True)
 
@@ -127,7 +127,7 @@ class Profesores(models.Model):
     cod_profesor = models.IntegerField(primary_key=True)
     nom_profesor = models.CharField(max_length=50)
     profesion = models.CharField(max_length=50)
-    pw_profesor = models.IntegerField(blank=True, null=True)
+    pw_profesor = models.CharField(max_length=50, null=True)
     niv_escolaridad = models.CharField(max_length=50)
     activo_profesor = models.BooleanField(blank=True, null=True)
 
