@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from datetime import datetime
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from django.db.models import F, OuterRef, Subquery, Sum
 from .models import (
     Asignaturas,
@@ -633,12 +633,118 @@ class QuestionViewSet(ViewSet):
 
     # POST - create question
     def create(self, request):
-        o_data = {
-                "status": 200,
+        try:
+            # Extraer datos del cuerpo de la solicitud
+            question_statement = request.data.get("questionStatement")
+            time = request.data.get("time")
+            type_question = request.data.get("typeQuestion")
+            options = request.data.get("options")
+            subjects = request.data.get("subjects")
+            cod_profesor = request.query_params.get('X-Code')# Código del profesor del encabezado
+
+            # Validar datos requeridos
+            if not question_statement or not time or not type_question or not options or not subjects or not cod_profesor:
+                raise ValidationError("Todos los campos (questionStatement, time, typeQuestion, options, subjects) y el encabezado X-Code son obligatorios.")
+
+            if not isinstance(options, list) or not options:
+                raise ValidationError("La lista de opciones no puede estar vacía.")
+
+            if not isinstance(subjects, list) or not subjects:
+                raise ValidationError("La lista de materias no puede estar vacía.")
+
+            # Validar que el tipo de pregunta existe
+            if not Tipospreguntas.objects.filter(id_tipo_pregunta=type_question).exists():
+                raise ValidationError(f"El tipo de pregunta {type_question} no existe.")
+
+            # Verificar si la pregunta ya existe
+            if Preguntas.objects.filter(desc_pregunta=question_statement, tipo_pregunta_id=type_question).exists():
+                return Response({
+                    "status": 409,
+                    "message": "La pregunta ya existe.",
+                    "isCreate": False
+                }, status=409)
+
+            # Validar que las materias existen
+            asignaturas = Asignaturas.objects.filter(nom_asignatura__in=subjects)
+            if asignaturas.count() != len(subjects):
+                raise ValidationError("Algunas materias proporcionadas no existen.")
+
+            # Crear la pregunta
+            pregunta = Preguntas.objects.create(
+                desc_pregunta=question_statement,
+                tipo_pregunta_id=type_question
+            )
+
+            # Crear la pregunta
+            pregunta = Preguntas.objects.create(
+                desc_pregunta=question_statement,
+                tipo_pregunta_id=type_question
+            )
+
+            # Registrar las opciones y las relaciones en Corresponde
+            respuestas = []
+            for option in options:
+                text_option = option.get("textOption")
+                is_correct = option.get("isCorrect", False)
+
+                if not text_option:
+                    raise ValidationError("Cada opción debe tener un texto.")
+
+                # Crear la opción en Respuestas
+                respuesta = Respuestas.objects.create(
+                    desc_respuesta=text_option
+                )
+                respuestas.append({
+                    "instance": respuesta,
+                    "is_correct": is_correct
+                })
+
+                # Relacionar la pregunta con la respuesta en Corresponde
+                Corresponde.objects.create(
+                    id_pregunta=pregunta,
+                    id_respuesta=respuesta,
+                    correcta=is_correct
+                )
+
+            # Registrar las asociaciones en la tabla Ingresa
+            for asignatura in asignaturas:
+                # Buscar la relación en Imparte
+                imparte_entry = Imparte.objects.filter(
+                    cod_profesor=cod_profesor,
+                    cod_asignatura=asignatura,
+                    grupo=1
+                ).first()
+
+                if not imparte_entry:
+                    raise ValidationError(f"No se encontró una relación válida en Imparte para el profesor {cod_profesor}, asignatura {asignatura.cod_asignatura} y grupo 1.")
+
+                # Crear entradas en Ingresa para cada respuesta
+                for respuesta_data in respuestas:
+                    Ingresa.objects.create(
+                        cod_profesor=imparte_entry,  # Instancia de Imparte
+                        cod_asignatura=asignatura.cod_asignatura,
+                        grupo=1,  # Grupo fijo según lo indicado
+                        id_pregunta=Corresponde.objects.filter(
+                            id_pregunta=pregunta,
+                            id_respuesta=respuesta_data["instance"]
+                        ).first(),  # Instancia de Corresponde
+                        id_respuesta=respuesta_data["instance"].id_respuesta,  # ID de Respuestas
+                        tiempo_pregunta=time
+                    )
+
+            # Respuesta final con propiedades adicionales
+            return Response({
+                "status": 201,
                 "message": "La pregunta fue creada correctamente",
-                "isCreate": True
-            }
-        return Response(o_data)
+                "isCreate": True,
+                "idQuestion": pregunta.id_pregunta
+            }, status=201)
+
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=400)
+
+        except Exception as e:
+            return Response({"error": f"Error al crear la pregunta: {str(e)}"}, status=500)
 
 class SalonViewSet(ViewSet):
     # GET - list available salon info, based on id, or date provided in body
