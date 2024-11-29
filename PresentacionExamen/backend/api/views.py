@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from datetime import datetime
@@ -165,12 +165,6 @@ class ExamQuestionaireViewSet(ViewSet):
         except Exception as e:
             return Response({"error": f"Error al obtener el cuestionario del examen: {str(e)}"}, status=500)
 
-    # GET - pull all questionaire ???
-    def list(self, request):
-        o_data = {
-            }
-        return Response(o_data)
-
 class ExamScheduledViewSet(ViewSet):
     # GET - Retrieve exam scheduled data
     def list(self, request):
@@ -225,7 +219,6 @@ class ExamScheduledViewSet(ViewSet):
                     "subjectName": exam.cod_asignatura.nombre_asignatura if hasattr(exam.cod_asignatura, 'nombre_asignatura') else "",
                     "date": f"{exam.fecha_examen} {exam.hora_examen}",
                     "salonNum": crea_entry.id_salon if crea_entry else "",
-                    "salonBuilding": "",  # Campo no definido
                     "numQuestions": preguntas.count(),
                     "duration": total_duration,
                     "isProgrammed": True
@@ -267,18 +260,70 @@ class ExamScheduledViewSet(ViewSet):
         return Response(o_data)
 
     # PUT - Update scheduled exam
-    def update(self, request):
-        s_subject_id = request.query_params.get('subject_id', None)
-        s_student_id = request.query_params.get('student_id', None)
+    @action(detail=False, methods=['put'])
+    def reschedule(self, request):
+        try:
+            # Extraer datos del cuerpo de la solicitud
+            subject = request.data.get("subject")
+            type_exam = request.data.get("typeExam")
+            new_date = request.data.get("date")
+            new_salon = request.data.get("salon")
+            cod_profesor = request.query_params.get("X-Code")  # Código del profesor (opcional para identificar el examen)
 
-        # Instancia clase
-        # Llamado metodo para obtener info de examenes
-        o_data = {
+            # Procesar fecha y hora
+            try:
+                fecha, hora = new_date.split("T")
+                hora = hora.split(".")[0]
+            except ValueError:
+                raise ValidationError("El formato de la fecha es incorrecto. Use ISO8601 (YYYY-MM-DDTHH:MM:SS).")
+
+            # Buscar registros en Crea
+            crea_records = Crea.objects.filter(
+                cod_profesor=cod_profesor,
+                cod_asignatura=subject,
+                tipo_examen=type_exam,
+                grupo=1
+            )
+
+            if not crea_records.exists():
+                return Response({
+                    "status": 404,
+                    "message": "No se encontraron registros del examen en la tabla Crea."
+                }, status=404)
+
+            # Obtener id_examen
+            exam_ids = crea_records.values_list("id_examen", flat=True)
+            #print("exam_ids.count()",exam_ids.count())
+
+            # Actualizar salón en Crea
+            crea_records.update(id_salon=new_salon)
+
+            # Buscar y actualizar en Programa
+            exam_records = Programa.objects.filter(
+                cod_profesor=cod_profesor,
+                cod_asignatura=subject,
+                id_examen__in=exam_ids,
+                grupo=1
+            )
+
+            if not exam_records.exists():
+                return Response({
+                    "status": 404,
+                    "message": "No se encontraron registros del examen en la tabla Programa."
+                }, status=404)
+
+            exam_records.update(fecha_examen=fecha, hora_examen=hora)
+
+            return Response({
                 "status": 200,
-                "message": "Examen reprogramado con exito",
-                "isCreate": True
-            }
-        return Response(o_data)
+                "message": f"El examen fue reprogramado exitosamente para {exam_records.count()} estudiantes."
+            }, status=200)
+
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=400)
+
+        except Exception as e:
+            return Response({"error": f"Error al reprogramar el examen: {str(e)}"}, status=500)
 
 class ExamViewSet(ViewSet):
     # GET - get exam settings based on id
@@ -640,7 +685,7 @@ class QuestionViewSet(ViewSet):
             type_question = request.data.get("typeQuestion")
             options = request.data.get("options")
             subjects = request.data.get("subjects")
-            cod_profesor = request.query_params.get('X-Code')# Código del profesor del encabezado
+            cod_profesor = request.query_params.get("X-Code")
 
             # Validar datos requeridos
             if not question_statement or not time or not type_question or not options or not subjects or not cod_profesor:
