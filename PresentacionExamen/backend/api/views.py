@@ -855,11 +855,7 @@ class SalonViewSet(ViewSet):
 class SubjectViewSet(ViewSet):
     # GET - subjects info based on teacher_id provided
     def list(self, request):
-        # Obtener el teacher_id del header
         teacher_id = request.query_params.get('teacher_id')
-        #teacher_id = request.META.get('HTTP_TEACHER_ID')
-        #teacher_id = request.headers.get('teacher_id')
-        #print('teacher_id',teacher_id)
 
         if not teacher_id:
             return Response(
