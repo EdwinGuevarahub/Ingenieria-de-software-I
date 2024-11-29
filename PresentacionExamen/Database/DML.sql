@@ -129,6 +129,7 @@ INSERT INTO Evalua (cod_estudiante, cod_asignatura, grupo, cod_profesor, id_preg
 VALUES
 (20142005141, 5014, 1, 30590, 1, 1), -- Estudiante responde correctamente a Pregunta 1
 (20152005073, 5015, 1, 30580, 2, 3), -- Estudiante responde correctamente a Pregunta 2
+(20152005073, 5015, 1, 30580, 3, 6), -- Estudiante responde correctamente a Pregunta 2
 (20162007001, 7777, 1, 30580, 3, 5), -- Pregunta 3, correcto
 (20162007002, 5014, 1, 30590, 4, 7), -- Pregunta 4, correcta
 (20202003002, 5015, 1, 30580, 5, 9); -- Pregunta 5, correcta
@@ -137,7 +138,8 @@ INSERT INTO Crea (cod_profesor, cod_asignatura, grupo, cod_estudiante, id_pregun
 VALUES
 (30590, 5014, 1, 20142005141, 1, 1, 1, 1, FALSE, NULL), -- Examen del 1er corte
 (30580, 5015, 1, 20152005073, 2, 3, 2, 4, FALSE, NULL),    -- Examen final
-(30580, 5015, 1, 20152005073, 2, 3, 3, 3, FALSE, 102);    -- Examen 3er corte
+(30580, 5015, 1, 20152005073, 2, 3, 3, 3, FALSE, 102),    -- Examen 3er corte
+(30580, 5015, 1, 20152005073, 3, 6, 3, 3, FALSE, 102);    -- Examen 3er corte
 
 INSERT INTO Ingresa (cod_profesor, cod_asignatura, grupo, id_pregunta, id_respuesta, tiempo_pregunta)
 VALUES

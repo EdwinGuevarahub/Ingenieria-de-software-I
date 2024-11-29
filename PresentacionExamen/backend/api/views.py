@@ -77,85 +77,59 @@ class AuthViewSet(ViewSet):
 
 class ExamQuestionaireViewSet(ViewSet):
     # GET - pull questionaire questions based on exam_id provided
-    def retrieve(self, request, exam_id=None, *args, **kwargs):
-        # Usa question_id para manejar la lógica
-        s_exam_id = exam_id
+    def retrieve(self, request, pk=None):
+        try:
+            # Obtener la información básica del examen desde Crea
+            crea_entries = Crea.objects.filter(id_examen=pk).select_related('tipo_examen')
 
-        asignaturas = Estudiantes.objects.all()  # Obtén los registros del modelo
-        serializer = EstudianteSerializer(asignaturas, many=True)  # Serializa los datos
+            if not crea_entries.exists():
+                return Response({"error": "El examen no existe."}, status=404)
 
-        o_data = {
-            "exam": {
-                "subject": 120,
-                "duration": 10,
-                "isProgrammed": True,
-                "typeExam": 1,
-                "questions": [
-                        {
-                            "idQuestion": 19,
-                            "typeQuestion": 1,
-                            "questionStatement": "Enunciado 1",
-                            "options": [
-                            {
-                                "idOption": 4,
-                                "textOption": "Opción multi 1"
-                            },
-                            {
-                                "idOption": 10,
-                                "textOption": "Opción multi 2"
-                            },
-                            {
-                                "idOption": 56,
-                                "textOption": "Opción multi 3"
-                            },
-                            {
-                                "idOption": 20,
-                                "textOption": "Opción multi 4"
-                            }
-                            ]
-                        },
-                        {
-                            "idQuestion": 40,
-                            "typeQuestion": 2,
-                            "questionStatement": "Enunciado 2",
-                            "options": [
-                            {
-                                "idOption": 145,
-                                "textOption": "Opción unica 1"
-                            },
-                            {
-                                "idOption": 109,
-                                "textOption": "Opción unica 2"
-                            },
-                            {
-                                "idOption": 5,
-                                "textOption": "Opción unica 3"
-                            },
-                            {
-                                "idOption": 230,
-                                "textOption": "Opción unica 4"
-                            }
-                            ]
-                        },
-                        {
-                            "idQuestion": 396,
-                            "typeQuestion": 3,
-                            "questionStatement": "Enunciado 3",
-                            "options": [
-                            {
-                                "idOption": 1,
-                                "textOption": "Falso"
-                            },
-                            {
-                                "idOption": 2,
-                                "textOption": "Verdadero"
-                            }
-                            ]
-                        }
-                    ]
-                }
+            crea_entry = crea_entries.first()
+
+            # Obtener las preguntas relacionadas al examen
+            preguntas_ids = crea_entries.values_list('id_pregunta', flat=True)
+
+            preguntas = Preguntas.objects.filter(id_pregunta__in=preguntas_ids)
+
+            # Calcular la duración total del examen sumando los tiempos de las preguntas desde Ingresa
+            total_duration = Ingresa.objects.filter(
+                id_pregunta__in=preguntas_ids
+            ).aggregate(total_time=Sum('tiempo_pregunta'))['total_time'] or 0
+
+            # Construir la lista de preguntas con sus opciones
+            questions_list = []
+            for pregunta in preguntas:
+                opciones = Corresponde.objects.filter(id_pregunta=pregunta.id_pregunta).select_related('id_respuesta')
+                options_list = [
+                    {
+                        "idOption": opcion.id_respuesta.id_respuesta,
+                        "textOption": opcion.id_respuesta.desc_respuesta
+                    }
+                    for opcion in opciones
+                ]
+
+                questions_list.append({
+                    "idQuestion": pregunta.id_pregunta,
+                    "typeQuestion": pregunta.tipo_pregunta.id_tipo_pregunta,
+                    "questionStatement": pregunta.desc_pregunta,
+                    "options": options_list
+                })
+
+            # Construir la respuesta del examen
+            exam_data = {
+                "idExam": crea_entry.id_examen,
+                "subject": crea_entry.cod_asignatura,
+                "duration": total_duration,
+                "isProgrammed": crea_entry.examen_finalizado,
+                "typeExam": crea_entry.tipo_examen.id_tipo_examen,
+                "questions": questions_list
             }
-        return Response(serializer.data)
+
+            return Response({"exam": exam_data}, status=200)
+
+        except Exception as e:
+            return Response({"error": f"Error al obtener el cuestionario del examen: {str(e)}"}, status=500)
 
     # GET - pull all questionaire ???
     def list(self, request):
