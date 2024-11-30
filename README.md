@@ -11,3 +11,5 @@ Dev Docker Environment
 	- docker compose down -v ; docker rmi -f $(docker images -aq);
 	- docker-compose down && docker volume prune -f && docker-compose up --build -d
 	- docker system prune;
+# Execution command
+	- docker compose down -v && docker compose up --build
